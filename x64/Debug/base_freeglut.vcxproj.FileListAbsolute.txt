@@ -1,2 +1,0 @@
-C:\Users\stude\OneDrive\Desktop\big folder\misc work\cs334\a3_base\Base_freeglut\x64\Debug\base_freeglut.exe
-C:\Users\stude\OneDrive\Desktop\big folder\misc work\cs334\a3_completed\Base_freeglut\x64\Debug\base_freeglut.exe
