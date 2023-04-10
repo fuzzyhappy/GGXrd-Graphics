@@ -3,7 +3,7 @@
 
 # Model to load and their type (0 for floor and 1 for cube)
 models/plane.obj 0
-models/ANSMod.obj 1
+models/ANS_Mod.obj 1
 
 # Rotation matrix and translation vector of each model
 5.0 0 0
