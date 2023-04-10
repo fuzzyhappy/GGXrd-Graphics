@@ -12,7 +12,7 @@ namespace fs = std::filesystem;
 
 // Menu identifiers
 const int MENU_OBJBASE = 64;				// Select object to view
-const int MENU_SHADING_PHONG = 4;			// Shading mode
+const int MENU_SHADING_CEL = 4;			// Shading mode
 const int MENU_SHADING_NORMALS = 6;
 const int MENU_EXIT = 1;					// Exit application
 
@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
 	std::cout << "  h,H:  Move the object along y axis" << std::endl;
 	std::cout << "  j,J:  Move the object along x axis" << std::endl;
 	std::cout << "  k,K:  Move the object along z axis" << std::endl;
-	std::cout << "  l,L:  Toggle shading type (Phong vs. colored normals)" << std::endl;
+	std::cout << "  l,L:  Toggle shading type (Cel vs. colored normals)" << std::endl;
 	std::cout << "  m,M:  Toggle normal mapping mode (on or off)" << std::endl;
 	std::cout << "  s,S:  Toggle shadow mapping mode (on or off)" << std::endl;
 	std::cout << std::endl;
@@ -106,7 +106,7 @@ void initGLUT(int* argc, char** argv) {
 
 void initMenu() {
 	int shadingMenu = glutCreateMenu(menu);
-	glutAddMenuEntry("Phong", MENU_SHADING_PHONG);
+	glutAddMenuEntry("Cel", MENU_SHADING_CEL);
 	glutAddMenuEntry("Normals", MENU_SHADING_NORMALS);
 
 	// Create the main menu, adding the objects menu as a submenu
@@ -136,25 +136,25 @@ void reshape(GLint w, GLint h) {
 // Called when a key is pressed
 void keyPress(unsigned char key, int x, int y) {
 	switch (key) {
-	// Toggle shading mode (normals vs Phong)
+	// Toggle shading mode (normals vs Cel)
 	case 'l': {
 		GLState::ShadingMode sm = glState->getShadingMode();
 		if (sm == GLState::SHADINGMODE_NORMALS) {
-			glState->setShadingMode(GLState::SHADINGMODE_PHONG);
-			std::cout << "Showing Phong shading & illumination" << std::endl;
-		} else if (sm == GLState::SHADINGMODE_PHONG) {
+			glState->setShadingMode(GLState::SHADINGMODE_CEL);
+			std::cout << "Showing Cel shading & illumination" << std::endl;
+		} else if (sm == GLState::SHADINGMODE_CEL) {
 			glState->setShadingMode(GLState::SHADINGMODE_NORMALS);
 			std::cout << "Showing normals as colors" << std::endl;
 		}
 		glutPostRedisplay();
 		break; }
-	// Toggle shading mode (normals vs Phong)
+	// Toggle shading mode (normals vs Cel)
 	case 'L': {
 		GLState::ShadingMode sm = glState->getShadingMode();
 		if (sm == GLState::SHADINGMODE_NORMALS) {
-			glState->setShadingMode(GLState::SHADINGMODE_PHONG);
-			std::cout << "Showing Phong shading & illumination" << std::endl;
-		} else if (sm == GLState::SHADINGMODE_PHONG) {
+			glState->setShadingMode(GLState::SHADINGMODE_CEL);
+			std::cout << "Showing Cel shading & illumination" << std::endl;
+		} else if (sm == GLState::SHADINGMODE_CEL) {
 			glState->setShadingMode(GLState::SHADINGMODE_NORMALS);
 			std::cout << "Showing normals as colors" << std::endl;
 		}
@@ -381,9 +381,9 @@ void menu(int cmd) {
 		glutLeaveMainLoop();
 		break;
 
-	// Show Phong shading & illumination
-	case MENU_SHADING_PHONG:
-		glState->setShadingMode(GLState::SHADINGMODE_PHONG);
+	// Show Cel shading & illumination
+	case MENU_SHADING_CEL:
+		glState->setShadingMode(GLState::SHADINGMODE_CEL);
 		glutPostRedisplay();
 		break;
 

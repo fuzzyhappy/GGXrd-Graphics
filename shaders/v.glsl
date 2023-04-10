@@ -42,7 +42,7 @@ uniform mat4 modelMat;		 // Model-to-world transform matrix
 uniform mat4 lightSpaceMat;  // World-to-light matrix location
 uniform int objType;         // 0 for floor and 1 for cube
 uniform mat4 viewProjMat;	 // World-to-clip transform matrix
-uniform int shadingMode;     // Phong vs. colored normals
+uniform int shadingMode;     // Cel vs. colored normals
 uniform vec3 camPos;         // Camera position
 
 uniform vec3 floorColor;

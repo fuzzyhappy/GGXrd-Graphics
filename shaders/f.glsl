@@ -1,7 +1,7 @@
 #version 330
 
 const int SHADINGMODE_NORMALS = 0;		// Show normals as colors
-const int SHADINGMODE_PHONG = 1;		// Phong shading + illumination
+const int SHADINGMODE_CEL = 1;			// Cel shading + illumination
 
 const int NORMAL_MAPPING_ON = 0;        // Turn on normal mapping
 const int NORMAL_MAPPING_OFF = 1;       // Turn off
@@ -13,13 +13,14 @@ const int LIGHTTYPE_POINT = 0;			// Point light
 const int LIGHTTYPE_DIRECTIONAL = 1;	// Directional light
 
 const int OBJTYPE_FLOOR = 0;
-const int OBJTYPE_SPHERE = 1;
+const int OBJTYPE_MODEL = 1;
 
 // Textures
-uniform sampler2D texPlane;     // Floor texture
-uniform sampler2D texCube;      // Cube texture
-uniform sampler2D texCubeNorm;  // Normal map
-uniform sampler2D shadowMap;    // Shadow map
+uniform sampler2D texModelColor; // Model color texture
+uniform sampler2D texModelSss; 	 // Model tint texture
+uniform sampler2D texModelNrm; 	 // Model normal texture
+uniform sampler2D texModelLgt; 	 // Model inner line Texture
+uniform sampler2D shadowMap;     // Shadow map
 
 smooth in vec3 fragPos;		    // Interpolated position in world-space
 smooth in vec3 fragNorm;	    // Interpolated normal in world-space
@@ -51,7 +52,7 @@ layout (std140) uniform LightBlock {
 uniform int shadingMode;		// Which shading mode
 uniform int normalMapMode;      // Whether turn on normal mapping
 uniform int shadowMapMode;      // Whether turn on shadow mapping
-uniform int objType;            // 0 for floor and 1 for cube
+uniform int objType;            // 0 for floor and 1 for model
 uniform vec3 camPos;			// World-space camera position
 
 uniform vec3 floorColor;			// Object color
@@ -59,11 +60,11 @@ uniform float floorAmbStr;			// Ambient strength
 uniform float floorDiffStr;			// Diffuse strength
 uniform float floorSpecStr;			// Specular strength
 uniform float floorSpecExp;			// Specular exponent
-uniform vec3 cubeColor;			    // Object color
-uniform float cubeAmbStr;			// Ambient strength
-uniform float cubeDiffStr;			// Diffuse strength
-uniform float cubeSpecStr;			// Specular strength
-uniform float cubeSpecExp;			// Specular exponent
+uniform vec3  modelColor;			    // Object color
+uniform float modelAmbStr;			// Ambient strength
+uniform float modelDiffStr;			// Diffuse strength
+uniform float modelSpecStr;			// Specular strength
+uniform float modelSpecExp;			// Specular exponent
 
 float calculateShadow(vec4 light_frag_pos) {  // TODO: add other parameters if needed
 	// Perspective divide
@@ -87,36 +88,38 @@ void main() {
 	vec3 objColor = floorColor;
 	float ambStr = floorAmbStr, diffStr = floorDiffStr, specStr = floorSpecStr, specExp = floorSpecExp;
 	if (objType == OBJTYPE_FLOOR) {
-		objColor = texture(texPlane, fragUV).xyz;
+		objColor = vec3(10, 10.0, 10.0);
 		ambStr = floorAmbStr;
 		diffStr = floorDiffStr;
 		specStr = floorSpecStr;
 		specExp = floorSpecExp;
 	}
-	else if (objType == OBJTYPE_SPHERE) {
-		objColor = texture(texCube, fragUV).xyz;
-		ambStr = cubeAmbStr;
-		diffStr = cubeDiffStr;
-		specStr = cubeSpecStr;
-		specExp = cubeSpecExp;
+	else if (objType == OBJTYPE_MODEL) {
+		//objColor = vec3(0, 0, 10.0);
+		objColor = texture(texModelColor, fragUV).xyz;
+		ambStr = modelAmbStr;
+		diffStr = modelDiffStr;
+		specStr = modelSpecStr;
+		specExp = modelSpecExp;
 	}
 
 	if (shadingMode == SHADINGMODE_NORMALS) {
-		if (normalMapMode == NORMAL_MAPPING_ON && objType == OBJTYPE_SPHERE)
-			outCol = texture(texCubeNorm, fragUV).xyz;  // Get normal from normal map
+		if (normalMapMode == NORMAL_MAPPING_ON && objType == OBJTYPE_MODEL)
+			outCol = texture(texModelNrm, fragUV).xyz;  // Get normal from normal map
 		else
 			outCol = normalize(fragNorm) * 0.5 + vec3(0.5);
 	}
-	else if (shadingMode == SHADINGMODE_PHONG) {
+	else if (shadingMode == SHADINGMODE_CEL) {
 		outCol = vec3(0.0);
 		for (int i = 0; i < MAX_LIGHTS; i++) {
 			if (lights[i].enabled) {
 				vec3 normal;
 
-				if (normalMapMode == NORMAL_MAPPING_ON && objType == OBJTYPE_SPHERE) {
+				if (normalMapMode == NORMAL_MAPPING_ON && objType == OBJTYPE_MODEL) {
 					// TODO 3-1
 					// Get the fragment normal, store it in "normal" SEE LINE 111
-					normal = vec3(texture(texCubeNorm, fragUV));
+					normal = normalize(fragNorm);
+					//normal = vec3(texture(texModelNrm, fragUV));
 					normal = 2 * normal;
 					normal = normal - 1.0;
 					normal = normalize(normal);
@@ -128,7 +131,7 @@ void main() {
 				if (lights[i].type == LIGHTTYPE_POINT)
 					lightDir = normalize(lights[i].pos - fragPos);
 				else if (lights[i].type == LIGHTTYPE_DIRECTIONAL) {
-					if (normalMapMode == NORMAL_MAPPING_ON && objType == OBJTYPE_SPHERE) {
+					if (normalMapMode == NORMAL_MAPPING_ON && objType == OBJTYPE_MODEL) {
 						// TODO 3-2
 						lightDir = normalize(tanLightPos);
 						// Get vector to the light in tangent space, store it in "lightDir", SEE LINE 120
@@ -142,7 +145,7 @@ void main() {
 				float diffuse = max(dot(normal, lightDir), 0.0) * diffStr;
 
 				vec3 viewDir;
-				if (normalMapMode == NORMAL_MAPPING_ON && objType == OBJTYPE_SPHERE) {
+				if (normalMapMode == NORMAL_MAPPING_ON && objType == OBJTYPE_MODEL) {
 					// TODO 3-3
 					// Get vector to the viewer in tangent space, store it in "viewDir", SEE LINE 136
 				}
@@ -156,13 +159,13 @@ void main() {
 				// TODO 4-2
 				// Calculate shadow using the function calculateShadow, and modify the line (calculating the final color) below
 				float shadow;
-				if (shadowMapMode == SHADOW_MAPPING_ON)
+				if (shadowMapMode == SHADOW_MAPPING_ON && objType == OBJTYPE_FLOOR)
 					shadow = calculateShadow(lightFragPos);        // TODO: add more parameters if necessary
 				else if (shadowMapMode == SHADOW_MAPPING_OFF)
 					shadow = 0.0;
-				outCol += (ambient + (1-shadow)*diffuse + specular) * lights[i].color;  // TODO: use "shadow" variable here
+				//outCol += (ambient + (1-shadow)*diffuse + specular) * lights[i].color;  // TODO: use "shadow" variable here
 			}
 		}
-		outCol *= objColor;
+		outCol = objColor;
 	}
 }

@@ -1,32 +1,20 @@
 # Number of objects to load
-4
+2
 
 # Model to load and their type (0 for floor and 1 for cube)
 models/plane.obj 0
-models/icosphere.obj 1
-models/icosphere.obj 1
-models/icosphere.obj 1
+models/ANSMod.obj 1
 
 # Rotation matrix and translation vector of each model
 5.0 0 0
 0 5.0 0
 0 0 5.0
-0 -0.5 0
+0 0 0
 
-0.6 0 0
-0 0.6 0
-0 0 0.6
-0 1.0 0
-
-0.6 0 0
-0 0.6 0
-0 0 0.6
-1.0 0 0
-
-0.6 0 0
-0 0.6 0
-0 0 0.6
-0 0 -1.0
+1 0 0
+0 1 0
+0 0 1
+0 0 0
 
 # Material properties
 #   ambient strength     [0, 1]

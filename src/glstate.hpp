@@ -29,7 +29,7 @@ public:
 	// Enums
 	enum ShadingMode {
 		SHADINGMODE_NORMALS = 0,	// View normals as colors
-		SHADINGMODE_PHONG = 1,		// Use Phong shading and illumination
+		SHADINGMODE_CEL = 1,		// Use Cel shading and illumination
 	};
 	enum NormalMapMode {
 		NORMAL_MAPPING_ON = 0,      // Toggle normal mapping
@@ -64,12 +64,12 @@ public:
 	void setObjectColor(glm::vec3 color);
 
 	void setMaterialAttrs(
-		glm::vec3 floorColor, glm::vec3 cubeColor,
+		glm::vec3 floorColor, glm::vec3 modelColor,
 		float floorAmbStr, float floorDiffStr, float floorSpecStr, float floorSpecExp,
-		float cubeAmbStr, float cubeDiffStr, float cubeSpecStr, float cubeSpecExp
+		float modelAmbStr, float modelDiffStr, float modelSpecStr, float modelSpecExp
 	);
 
-	// Set the currently active cube (controlled by keyboard)
+	// Set the currently active model (controlled by keyboard)
 	inline void setActiveObj(const int objIndex) { activeObj = objIndex; }
 	inline int getActiveObj() const { return activeObj; }
 
@@ -119,7 +119,7 @@ protected:
 	std::vector<Light> lights;		// Lights
 
 	unsigned int numObjects;  // Number of objects in the scene
-	unsigned int activeObj = 1;   // The current active cube (1-3)
+	unsigned int activeObj = 1;   // The current active model (1-3)
 	float moveStep = 0.1f;  // Translation step
 
 	// Textures
@@ -138,11 +138,11 @@ protected:
 	GLuint normalMapModeLoc;       // Normal mapping mode location
 	GLuint shadowMapModeLoc;       // Shadow mapping mode location
 	GLuint camPosLoc;		       // Camera position location
-	GLuint floorColorLoc, cubeColorLoc;		    // Object color
-	GLuint floorAmbStrLoc, cubeAmbStrLoc;		// Ambient strength location
-	GLuint floorDiffStrLoc, cubeDiffStrLoc;		// Diffuse strength location
-	GLuint floorSpecStrLoc, cubeSpecStrLoc;		// Specular strength location
-	GLuint floorSpecExpLoc, cubeSpecExpLoc;		// Specular exponent location
+	GLuint floorColorLoc, 	modelColorLoc;		    // Object color
+	GLuint floorAmbStrLoc, 	modelAmbStrLoc;		// Ambient strength location
+	GLuint floorDiffStrLoc, modelDiffStrLoc;		// Diffuse strength location
+	GLuint floorSpecStrLoc, modelSpecStrLoc;		// Specular strength location
+	GLuint floorSpecExpLoc, modelSpecExpLoc;		// Specular exponent location
 	float cur_time;
 };
 

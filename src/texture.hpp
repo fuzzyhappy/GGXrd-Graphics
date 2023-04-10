@@ -29,9 +29,10 @@ public:
 	inline GLuint getdepthMapFBO() { return depthMapFBO; }
 
 protected:
-	GLuint texPlane;     // Plane/floor texture
-	GLuint texCube;      // Cube texture
-	GLuint texCubeNorm;  // Cube normal texture
+	GLuint texModelColor; // Model color texture
+	GLuint texModelSss; 	 // Model tint texture
+	GLuint texModelNrm; 	 // Model normal texture
+	GLuint texModelLgt; 	 // Model inner line Texture
 
 	const unsigned int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;  // depth map resolution
 	GLuint depthMapFBO = 0;  // depth map as frame buffer

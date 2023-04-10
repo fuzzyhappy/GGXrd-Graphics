@@ -11,7 +11,7 @@
 
 // Constructor
 GLState::GLState() :
-	shadingMode(SHADINGMODE_PHONG),
+	shadingMode(SHADINGMODE_CEL),
 	normalMapMode(NORMAL_MAPPING_ON),
 	shadowMapMode(SHADOW_MAPPING_ON),
 	width(1), height(1),
@@ -35,11 +35,11 @@ GLState::GLState() :
 	floorDiffStrLoc(0),
 	floorSpecStrLoc(0),
 	floorSpecExpLoc(0),
-	cubeColorLoc(0),
-	cubeAmbStrLoc(0),
-	cubeDiffStrLoc(0),
-	cubeSpecStrLoc(0),
-	cubeSpecExpLoc(0)
+	modelColorLoc(0),
+	modelAmbStrLoc(0),
+	modelDiffStrLoc(0),
+	modelSpecStrLoc(0),
+	modelSpecExpLoc(0)
 	{}
 
 // Destructor
@@ -61,7 +61,7 @@ void GLState::initializeGL() {
 	initShaders();
 
 	// Set drawing state
-	setShadingMode(SHADINGMODE_PHONG);
+	setShadingMode(SHADINGMODE_CEL);
 	setNormalMapMode(NORMAL_MAPPING_ON);
 	setShadowMapMode(SHADOW_MAPPING_ON);
 
@@ -127,15 +127,17 @@ void GLState::paintGL() {
 	// Activate textures and pass them to the shader
 	textures.activeTextures();
 	textures.activeDepthMap();
-	GLuint texUnitLoc0, texUnitLoc1, texUnitLoc2, texUnitLoc3;
-	texUnitLoc0 = glGetUniformLocation(shader, "texPlane");
-	texUnitLoc1 = glGetUniformLocation(shader, "texCube");
-	texUnitLoc2 = glGetUniformLocation(shader, "texCubeNorm");
-	texUnitLoc3 = glGetUniformLocation(shader, "shadowMap");
+	GLuint texUnitLoc0, texUnitLoc1, texUnitLoc2, texUnitLoc3, texUnitLoc4;
+	texUnitLoc0 = glGetUniformLocation(shader, "texModelColor");
+	texUnitLoc1 = glGetUniformLocation(shader, "texModelSss");
+	texUnitLoc2 = glGetUniformLocation(shader, "texModelNrm");
+	texUnitLoc3 = glGetUniformLocation(shader, "texModelLgt");
+	texUnitLoc4 = glGetUniformLocation(shader, "shadowMap");
 	glUniform1i(texUnitLoc0, 0);
 	glUniform1i(texUnitLoc1, 1);
 	glUniform1i(texUnitLoc2, 2);
 	glUniform1i(texUnitLoc3, 3);
+	glUniform1i(texUnitLoc4, 4);
 
 	// Pass the transform matrix to the shader
 	glUniformMatrix4fv(lightSpaceMatLoc, 1, GL_FALSE, glm::value_ptr(lightSpaceMat));
@@ -216,35 +218,35 @@ void GLState::setShadowMapMode(ShadowMapMode smm) {
 // Get object color
 glm::vec3 GLState::getObjectColor() const {
 	glm::vec3 objColor;
-	glGetUniformfv(shader, cubeColorLoc, glm::value_ptr(objColor));
+	glGetUniformfv(shader, modelColorLoc, glm::value_ptr(objColor));
 	return objColor;
 }
 
 // Get ambient strength
 float GLState::getAmbientStrength() const {
 	float ambStr;
-	glGetUniformfv(shader, cubeAmbStrLoc, &ambStr);
+	glGetUniformfv(shader, modelAmbStrLoc, &ambStr);
 	return ambStr;
 }
 
 // Get diffuse strength
 float GLState::getDiffuseStrength() const {
 	float diffStr;
-	glGetUniformfv(shader, cubeDiffStrLoc, &diffStr);
+	glGetUniformfv(shader, modelDiffStrLoc, &diffStr);
 	return diffStr;
 }
 
 // Get specular strength
 float GLState::getSpecularStrength() const {
 	float specStr;
-	glGetUniformfv(shader, cubeSpecStrLoc, &specStr);
+	glGetUniformfv(shader, modelSpecStrLoc, &specStr);
 	return specStr;
 }
 
 // Get specular exponent
 float GLState::getSpecularExponent() const {
 	float specExp;
-	glGetUniformfv(shader, cubeSpecExpLoc, &specExp);
+	glGetUniformfv(shader, modelSpecExpLoc, &specExp);
 	return specExp;
 }
 
@@ -252,7 +254,7 @@ float GLState::getSpecularExponent() const {
 void GLState::setObjectColor(glm::vec3 color) {
 	// Update value in shader
 	glUseProgram(shader);
-	glUniform3fv(cubeColorLoc, 1, glm::value_ptr(color));
+	glUniform3fv(modelColorLoc, 1, glm::value_ptr(color));
 	glUseProgram(0);
 }
 
@@ -260,7 +262,7 @@ void GLState::setObjectColor(glm::vec3 color) {
 void GLState::setAmbientStrength(float ambStr) {
 	// Update value in shader
 	glUseProgram(shader);
-	glUniform1f(cubeAmbStrLoc, ambStr);
+	glUniform1f(modelAmbStrLoc, ambStr);
 	glUseProgram(0);
 }
 
@@ -268,7 +270,7 @@ void GLState::setAmbientStrength(float ambStr) {
 void GLState::setDiffuseStrength(float diffStr) {
 	// Update value in shader
 	glUseProgram(shader);
-	glUniform1f(cubeDiffStrLoc, diffStr);
+	glUniform1f(modelDiffStrLoc, diffStr);
 	glUseProgram(0);
 }
 
@@ -276,7 +278,7 @@ void GLState::setDiffuseStrength(float diffStr) {
 void GLState::setSpecularStrength(float specStr) {
 	// Update value in shader
 	glUseProgram(shader);
-	glUniform1f(cubeSpecStrLoc, specStr);
+	glUniform1f(modelSpecStrLoc, specStr);
 	glUseProgram(0);
 }
 
@@ -284,26 +286,26 @@ void GLState::setSpecularStrength(float specStr) {
 void GLState::setSpecularExponent(float specExp) {
 	// Update value in shader
 	glUseProgram(shader);
-	glUniform1f(cubeSpecExpLoc, specExp);
+	glUniform1f(modelSpecExpLoc, specExp);
 	glUseProgram(0);
 }
 
 void GLState::setMaterialAttrs(
-	glm::vec3 floorColor, glm::vec3 cubeColor,
+	glm::vec3 floorColor, glm::vec3 modelColor,
 	float floorAmbStr, float floorDiffStr, float floorSpecStr, float floorSpecExp,
-	float cubeAmbStr, float cubeDiffStr, float cubeSpecStr, float cubeSpecExp) {  // set material attributes (initialization)
+	float modelAmbStr, float modelDiffStr, float modelSpecStr, float modelSpecExp) {  // set material attributes (initialization)
 	// Update values in shader
 	glUseProgram(shader);
 	glUniform3fv(floorColorLoc, 1, glm::value_ptr(floorColor));
-	glUniform3fv(cubeColorLoc, 1, glm::value_ptr(cubeColor));
+	glUniform3fv(modelColorLoc, 1, glm::value_ptr(modelColor));
 	glUniform1f(floorAmbStrLoc, floorAmbStr);
 	glUniform1f(floorDiffStrLoc, floorDiffStr);
 	glUniform1f(floorSpecStrLoc, floorSpecStr);
 	glUniform1f(floorSpecExpLoc, floorSpecExp);
-	glUniform1f(cubeAmbStrLoc, cubeAmbStr);
-	glUniform1f(cubeDiffStrLoc, cubeDiffStr);
-	glUniform1f(cubeSpecStrLoc, cubeSpecStr);
-	glUniform1f(cubeSpecExpLoc, cubeSpecExp);
+	glUniform1f(modelAmbStrLoc, modelAmbStr);
+	glUniform1f(modelDiffStrLoc, modelDiffStr);
+	glUniform1f(modelSpecStrLoc, modelSpecStr);
+	glUniform1f(modelSpecExpLoc, modelSpecExp);
 	glUseProgram(0);
 }
 
@@ -386,11 +388,11 @@ void GLState::initShaders() {
 	floorDiffStrLoc	 = glGetUniformLocation(shader, "floorDiffStr");
 	floorSpecStrLoc	 = glGetUniformLocation(shader, "floorSpecStr");
 	floorSpecExpLoc	 = glGetUniformLocation(shader, "floorSpecExp");
-	cubeColorLoc	 = glGetUniformLocation(shader, "cubeColor");
-	cubeAmbStrLoc	 = glGetUniformLocation(shader, "cubeAmbStr");
-	cubeDiffStrLoc	 = glGetUniformLocation(shader, "cubeDiffStr");
-	cubeSpecStrLoc	 = glGetUniformLocation(shader, "cubeSpecStr");
-	cubeSpecExpLoc	 = glGetUniformLocation(shader, "cubeSpecExp");
+	modelColorLoc	 = glGetUniformLocation(shader, "modelColor");
+	modelAmbStrLoc	 = glGetUniformLocation(shader, "modelAmbStr");
+	modelDiffStrLoc	 = glGetUniformLocation(shader, "modelDiffStr");
+	modelSpecStrLoc	 = glGetUniformLocation(shader, "modelSpecStr");
+	modelSpecExpLoc	 = glGetUniformLocation(shader, "modelSpecExp");
 
 	// Get uniform locations for depth shader
 	modelMatDepthLoc = glGetUniformLocation(depthShader, "modelMat");
@@ -487,22 +489,22 @@ void GLState::readConfig(std::string filename) {
 		}
 
 		// Objects attributes
-		float cubeAmbStr, cubeDiffStr, cubeSpecStr, cubeSpecExp;
+		float modelAmbStr, modelDiffStr, modelSpecStr, modelSpecExp;
 		float floorAmbStr, floorDiffStr, floorSpecStr, floorSpecExp;
-		glm::vec3 cubeColor, floorColor;
+		glm::vec3 modelColor, floorColor;
 		// Read material properties
-		ss >> cubeAmbStr >> cubeDiffStr >> cubeSpecStr >> cubeSpecExp;
-		ss >> cubeColor.r >> cubeColor.g >> cubeColor.b;
-		cubeColor /= 255.0f;
+		ss >> modelAmbStr >> modelDiffStr >> modelSpecStr >> modelSpecExp;
+		ss >> modelColor.r >> modelColor.g >> modelColor.b;
+		modelColor /= 255.0f;
 		ss >> floorAmbStr >> floorDiffStr >> floorSpecStr >> floorSpecExp;
 		ss >> floorColor.r >> floorColor.g >> floorColor.b;
 		floorColor /= 255.0f;
 
 		// Set material properties
 		setMaterialAttrs(
-			floorColor, cubeColor,
+			floorColor, modelColor,
 			floorAmbStr, floorDiffStr, floorSpecStr, floorSpecExp,
-			cubeAmbStr, cubeDiffStr, cubeSpecStr, cubeSpecExp
+			modelAmbStr, modelDiffStr, modelSpecStr, modelSpecExp
 		);
 
 		// Read number of lights

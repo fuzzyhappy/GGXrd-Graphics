@@ -20,6 +20,7 @@ Mesh::Mesh(std::string filename, const ObjType mType, bool keepLocalGeometry) {
 	vbuf = 0;
 	vcount = 0;
 	load(filename, keepLocalGeometry);
+	std::cout << "Finished loading " << filename << std::endl;
 }
 
 // Draw the mesh
@@ -49,6 +50,7 @@ void Mesh::load(std::string filename, bool keepLocalGeometry) {
 
 	std::string line;
 	while (getline(file, line)) {
+
 		if (line.substr(0, 2) == "v ") {
 			// Read position data
 			int index1 = indexOfNumberLetter(line, 2);

@@ -11,7 +11,7 @@ class Mesh {
 public:
 	enum ObjType {
 		MODEL_FLOOR = 0,  // floor
-		MODEL_CUBE = 1    // cube
+		MODEL_MODEL = 1    // model
 	};
 
 	Mesh(std::string filename, const ObjType mType, bool keepLocalGeometry = false);
