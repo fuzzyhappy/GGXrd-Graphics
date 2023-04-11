@@ -174,7 +174,8 @@ void Mesh::load(std::string filename, bool keepLocalGeometry) {
 		b *= scale;
 
 		glm::vec3 n = glm::vec3(1.0);
-		n = computeCross(t, b);
+		//n = computeCross(t, b);
+		n = (vertices[i+0].norm + vertices[i+1].norm + vertices[i+2].norm) * 0.33f;
 
 		// copy over TBN frame over vertices
 		vertices[i + 0].tangent = t;

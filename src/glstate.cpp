@@ -17,6 +17,7 @@ GLState::GLState() :
 	width(1), height(1),
 	fovy(45.0f),
 	camCoords(0.0f, 1.0f, 4.5f),
+	lookAt(0.0f, -1.0f),
 	camRotating(false),
 	shader(0),
 	depthShader(0),
@@ -148,7 +149,7 @@ void GLState::paintGL() {
 	float aspect = (float)width / (float)height;
 	glm::mat4 proj = glm::perspective(glm::radians(fovy), aspect, 0.1f, 100.0f);
 	// Camera viewpoint
-	glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -1.0f, -camCoords.z));
+	glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(lookAt, -camCoords.z));
 	view = glm::rotate(view, glm::radians(camCoords.y), glm::vec3(1.0f, 0.0f, 0.0f));
 	view = glm::rotate(view, glm::radians(camCoords.x), glm::vec3(0.0f, 1.0f, 0.0f));
 	// Combine transformations
@@ -337,6 +338,26 @@ void GLState::rotateCamera(glm::vec2 mousePos) {
 	}
 }
 
+void GLState::beginCameraTranslate(glm::vec2 mousePos) {
+	camTranslating = true;
+	initLookAt = lookAt;
+	initMousePos = mousePos;
+}
+
+void GLState::endCameraTranslate() {
+	camTranslating = false;
+}
+
+void GLState::translateCamera(glm::vec2 mousePos) {
+	if (camTranslating) {
+		float transScale = glm::min(width / 450.0f, height / 270.0f);
+		glm::vec2 mouseDelta = mousePos - initMousePos;
+		glm::vec2 newPos = initLookAt + mouseDelta / transScale;
+		if (glm::length(newPos - glm::vec2(newPos)) > FLT_EPSILON) {
+			lookAt = newPos;
+		}
+	}
+}
 
 void GLState::update_time(float time) {
 	cur_time = time;

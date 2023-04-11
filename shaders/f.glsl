@@ -96,7 +96,12 @@ void main() {
 	}
 	else if (objType == OBJTYPE_MODEL) {
 		//objColor = vec3(0, 0, 10.0);
-		objColor = texture(texModelColor, fragUV).xyz;
+		vec4 lineData = texture(texModelLgt, fragUV).rgba;
+		if (lineData.a >= .1) {
+			objColor = lineData.rgb;
+		} else {
+			objColor = texture(texModelColor, fragUV).rgb;
+		}
 		ambStr = modelAmbStr;
 		diffStr = modelDiffStr;
 		specStr = modelSpecStr;
@@ -110,7 +115,7 @@ void main() {
 			outCol = normalize(fragNorm) * 0.5 + vec3(0.5);
 	}
 	else if (shadingMode == SHADINGMODE_CEL) {
-		outCol = vec3(0.0);
+		outCol = vec3(1.0);
 		for (int i = 0; i < MAX_LIGHTS; i++) {
 			if (lights[i].enabled) {
 				vec3 normal;
@@ -118,8 +123,8 @@ void main() {
 				if (normalMapMode == NORMAL_MAPPING_ON && objType == OBJTYPE_MODEL) {
 					// TODO 3-1
 					// Get the fragment normal, store it in "normal" SEE LINE 111
-					normal = normalize(fragNorm);
-					//normal = vec3(texture(texModelNrm, fragUV));
+					//normal = normalize(fragNorm);
+					normal = vec3(texture(texModelNrm, fragUV));
 					normal = 2 * normal;
 					normal = normal - 1.0;
 					normal = normalize(normal);
@@ -142,7 +147,8 @@ void main() {
 
 				float ambient = ambStr;
 
-				float diffuse = max(dot(normal, lightDir), 0.0) * diffStr;
+				//float diffuse = max(dot(normal, lightDir), 0.0) * diffStr;
+				float diffuse = dot(normal, lightDir);
 
 				vec3 viewDir;
 				if (normalMapMode == NORMAL_MAPPING_ON && objType == OBJTYPE_MODEL) {
@@ -152,9 +158,9 @@ void main() {
 				else
 					viewDir = normalize(camPos - fragPos);
 
-				vec3 reflectDir = -lightDir - 2 * dot(-lightDir, normal) * normal;
-				float specular = max(dot(viewDir, reflectDir), 0.0);
-				specular = pow(specular, specExp) * specStr;
+				//vec3 reflectDir = -lightDir - 2 * dot(-lightDir, normal) * normal;
+				//float specular = max(dot(viewDir, reflectDir), 0.0);
+				//specular = pow(specular, specExp) * specStr;
 
 				// TODO 4-2
 				// Calculate shadow using the function calculateShadow, and modify the line (calculating the final color) below
@@ -163,9 +169,13 @@ void main() {
 					shadow = calculateShadow(lightFragPos);        // TODO: add more parameters if necessary
 				else if (shadowMapMode == SHADOW_MAPPING_OFF)
 					shadow = 0.0;
-				//outCol += (ambient + (1-shadow)*diffuse + specular) * lights[i].color;  // TODO: use "shadow" variable here
+
+				float threshhold = 0;
+				if (diffuse < threshhold) {
+					outCol *= texture(texModelSss, fragUV).rgb;
+				}
 			}
 		}
-		outCol = objColor;
+		outCol *= objColor;
 	}
 }

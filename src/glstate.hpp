@@ -85,6 +85,10 @@ public:
 	void beginCameraRotate(glm::vec2 mousePos);
 	void endCameraRotate();
 	void rotateCamera(glm::vec2 mousePos);
+	bool isCamTranslating() const { return camTranslating; }
+	void beginCameraTranslate(glm::vec2 mousePos);
+	void endCameraTranslate();
+	void translateCamera(glm::vec2 mousePos);
 	void offsetCamera(float offset);
 	inline float getMoveStep() { return moveStep; }
 	void update_time(float time);
@@ -110,8 +114,11 @@ protected:
 	int width, height;		// Width and height of the window
 	float fovy;				// Vertical field of view in degrees
 	glm::vec3 camCoords;	// Camera spherical coordinates
+	glm::vec2 lookAt;		// Camera center coordinates
 	bool camRotating;		// Whether camera is currently rotating
+	bool camTranslating;	// Whether camera is currently translating
 	glm::vec2 initCamRot;	// Initial camera rotation on click
+	glm::vec2 initLookAt;	// Initial lookat translation on click
 	glm::vec2 initMousePos;	// Initial mouse position on click
 
 	// Mesh and lights

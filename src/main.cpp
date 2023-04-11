@@ -270,19 +270,6 @@ void keyPress(unsigned char key, int x, int y) {
 		glutPostRedisplay();
 		break;
 	}
-	// Switch active light source
-	case '1':
-		glState->setActiveObj(1);
-		std::cout << "Active object: 1" << std::endl;
-		break;
-	case '2':
-		glState->setActiveObj(2);
-		std::cout << "Active object: 2" << std::endl;
-		break;
-	case '3':
-		glState->setActiveObj(3);
-		std::cout << "Active object: 3" << std::endl;
-		break;
 	default:
 		break;
 	}
@@ -309,6 +296,11 @@ void mouseBtn(int button, int state, int x, int y) {
 			glState->getLight(activeLight).beginRotate(
 				glm::vec2(x / scale, y / scale));
 
+		} else if (modifiers & GLUT_ACTIVE_CTRL) {
+			float scale = glm::min((float)width, (float)height);
+			glState->beginCameraTranslate(
+				glm::vec2(x / scale, y / scale));
+
 		// Start rotating the camera otherwise
 		} else
 			glState->beginCameraRotate(glm::vec2(x, y));
@@ -317,6 +309,7 @@ void mouseBtn(int button, int state, int x, int y) {
 	if (state == GLUT_UP && button == GLUT_LEFT_BUTTON) {
 		// Stop camera and light rotation
 		glState->endCameraRotate();
+		glState->endCameraTranslate();
 		glState->getLight(activeLight).endRotate();
 	}
 	// Scroll wheel up
@@ -327,7 +320,7 @@ void mouseBtn(int button, int state, int x, int y) {
 
 		// "Zoom in" otherwise
 		else
-			glState->offsetCamera(-0.1f);
+			glState->offsetCamera(-0.05f);
 		glutPostRedisplay();
 	}
 	// Scroll wheel down
@@ -338,7 +331,7 @@ void mouseBtn(int button, int state, int x, int y) {
 
 		// "Zoom out" otherwise
 		else
-			glState->offsetCamera(0.1f);
+			glState->offsetCamera(0.05f);
 		glutPostRedisplay();
 	}
 }
@@ -349,6 +342,10 @@ void mouseMove(int x, int y) {
 		// Rotate the camera if currently rotating
 		glState->rotateCamera(glm::vec2(x, y));
 		glutPostRedisplay();	// Request redraw
+
+	} else if (glState->isCamTranslating()) {
+		glState->rotateCamera(glm::vec2(x, y));
+		glutPostRedisplay();
 
 	} else if (glState->getLight(activeLight).isRotating()) {
 		float scale = glm::min((float)width, (float)height);
