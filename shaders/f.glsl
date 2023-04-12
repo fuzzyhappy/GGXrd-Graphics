@@ -88,20 +88,17 @@ void main() {
 	vec3 objColor = floorColor;
 	float ambStr = floorAmbStr, diffStr = floorDiffStr, specStr = floorSpecStr, specExp = floorSpecExp;
 	if (objType == OBJTYPE_FLOOR) {
-		objColor = vec3(10, 10.0, 10.0);
+		objColor = vec3(.7, .7, .7);
 		ambStr = floorAmbStr;
 		diffStr = floorDiffStr;
 		specStr = floorSpecStr;
 		specExp = floorSpecExp;
 	}
 	else if (objType == OBJTYPE_MODEL) {
-		//objColor = vec3(0, 0, 10.0);
+		objColor = vec3(1.0, 1.0, 1.0);
 		vec4 lineData = texture(texModelLgt, fragUV).rgba;
-		if (lineData.a >= .1) {
-			objColor = lineData.rgb;
-		} else {
-			objColor = texture(texModelColor, fragUV).rgb;
-		}
+		objColor *= lineData.rgb;
+		objColor *= texture(texModelColor, fragUV).rgb;
 		ambStr = modelAmbStr;
 		diffStr = modelDiffStr;
 		specStr = modelSpecStr;
