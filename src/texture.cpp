@@ -8,7 +8,7 @@ void Texture::load() {
 	texModelColor = prepareTexture("textures/ANS_base.png");
 	texModelSss   = prepareTexture("textures/ANS_Sss.png");
 	texModelNrm   = prepareTexture("textures/ANS_nrm.png");
-	texModelLgt   = prepareTexture("textures/ANS_lgt.png");
+	texModelIlm   = prepareTexture("textures/ANS_ilm.png");
 }
 
 void Texture::activeTextures() {
@@ -20,7 +20,7 @@ void Texture::activeTextures() {
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, texModelNrm);
 	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, texModelLgt);
+	glBindTexture(GL_TEXTURE_2D, texModelIlm);
 }
 
 void Texture::activeDepthMap() {

@@ -132,7 +132,7 @@ void GLState::paintGL() {
 	texUnitLoc0 = glGetUniformLocation(shader, "texModelColor");
 	texUnitLoc1 = glGetUniformLocation(shader, "texModelSss");
 	texUnitLoc2 = glGetUniformLocation(shader, "texModelNrm");
-	texUnitLoc3 = glGetUniformLocation(shader, "texModelLgt");
+	texUnitLoc3 = glGetUniformLocation(shader, "texModelIlm");
 	texUnitLoc4 = glGetUniformLocation(shader, "shadowMap");
 	glUniform1i(texUnitLoc0, 0);
 	glUniform1i(texUnitLoc1, 1);

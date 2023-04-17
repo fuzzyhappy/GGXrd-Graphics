@@ -19,7 +19,7 @@ const int OBJTYPE_MODEL = 1;
 uniform sampler2D texModelColor; // Model color texture
 uniform sampler2D texModelSss; 	 // Model tint texture
 uniform sampler2D texModelNrm; 	 // Model normal texture
-uniform sampler2D texModelLgt; 	 // Model inner line Texture
+uniform sampler2D texModelIlm; 	 // Special Texture
 uniform sampler2D shadowMap;     // Shadow map
 
 smooth in vec3 fragPos;		    // Interpolated position in world-space
@@ -96,8 +96,7 @@ void main() {
 	}
 	else if (objType == OBJTYPE_MODEL) {
 		objColor = vec3(1.0, 1.0, 1.0);
-		vec4 lineData = texture(texModelLgt, fragUV).rgba;
-		objColor *= lineData.rgb;
+		objColor *= texture(texModelIlm, fragUV).a;
 		objColor *= texture(texModelColor, fragUV).rgb;
 		ambStr = modelAmbStr;
 		diffStr = modelDiffStr;
@@ -120,11 +119,11 @@ void main() {
 				if (normalMapMode == NORMAL_MAPPING_ON && objType == OBJTYPE_MODEL) {
 					// TODO 3-1
 					// Get the fragment normal, store it in "normal" SEE LINE 111
-					//normal = normalize(fragNorm);
-					normal = vec3(texture(texModelNrm, fragUV));
-					normal = 2 * normal;
-					normal = normal - 1.0;
-					normal = normalize(normal);
+					normal = normalize(fragNorm);
+					//normal = vec3(texture(texModelNrm, fragUV));
+					//normal = 2 * normal;
+					//normal = normal - 1.0;
+					//normal = normalize(normal);
 				}
 				else
 					normal = normalize(fragNorm);
@@ -145,7 +144,6 @@ void main() {
 				float ambient = ambStr;
 
 				//float diffuse = max(dot(normal, lightDir), 0.0) * diffStr;
-				float diffuse = dot(normal, lightDir);
 
 				vec3 viewDir;
 				if (normalMapMode == NORMAL_MAPPING_ON && objType == OBJTYPE_MODEL) {
@@ -155,21 +153,30 @@ void main() {
 				else
 					viewDir = normalize(camPos - fragPos);
 
+
+				vec4 ilm = texture(texModelIlm, fragUV);
+				float diffuse = dot(normal, lightDir);
+				vec3 reflectDir = -lightDir - 2 * dot(-lightDir, normal) * normal;
+				float specular = pow(dot(viewDir, reflectDir), ilm.r);
+
 				//vec3 reflectDir = -lightDir - 2 * dot(-lightDir, normal) * normal;
 				//float specular = max(dot(viewDir, reflectDir), 0.0);
-				//specular = pow(specular, specExp) * specStr;
+				//specular = pow(dot(viewDir, reflectDir), specExp) * specStr;
 
 				// TODO 4-2
 				// Calculate shadow using the function calculateShadow, and modify the line (calculating the final color) below
 				float shadow;
 				if (shadowMapMode == SHADOW_MAPPING_ON && objType == OBJTYPE_FLOOR)
 					shadow = calculateShadow(lightFragPos);        // TODO: add more parameters if necessary
-				else if (shadowMapMode == SHADOW_MAPPING_OFF)
-					shadow = 0.0;
+					outCol -= 0.2 * shadow;
 
 				float threshhold = 0;
-				if (diffuse < threshhold) {
+				
+				if (diffuse <= 1-ilm.g && objType == OBJTYPE_MODEL) {
 					outCol *= texture(texModelSss, fragUV).rgb;
+				}
+				if (specular >= 1-ilm.b && objType == OBJTYPE_MODEL) {
+					outCol *= 1.15;
 				}
 			}
 		}
