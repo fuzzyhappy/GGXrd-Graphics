@@ -5,9 +5,6 @@ layout (triangle_strip, max_vertices = 6) out;
 const int OBJTYPE_FLOOR = 0;
 const int OBJTYPE_MODEL = 1;
 
-const int OBJTYPE_FLOOR = 0;
-const int OBJTYPE_MODEL = 1;
-
 uniform int geoObjType;            // 0 for floor and 1 for model
 
 smooth in vec3 geoPos[];	    // Interpolated position in world-space
