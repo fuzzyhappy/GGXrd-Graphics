@@ -151,6 +151,7 @@ void main() {
 			}
 		}
 		if (isOutline != 0.0) {
+			//outCol = normalize(fragNorm) * 0.5 + vec3(0.5);
 			outCol = vec3(0.0);
 			return;
 		}

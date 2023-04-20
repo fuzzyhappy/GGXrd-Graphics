@@ -180,6 +180,10 @@ void Mesh::load(std::string filename, bool keepLocalGeometry) {
 		glm::vec3 n = computeCross(e1, e2);
 		glm::vec3 vn = (vertices[i+0].norm + vertices[i+1].norm + vertices[i+2].norm) * 0.33f;
 		if (computeDot(n, vn) < 0) {
+			// change from 0, 1, 2 (CW) to 0, 2, 1 (CCW)
+			Vertex temp = vertices[i + 1];
+			vertices[i + 1] = vertices[i + 2];
+			vertices[i + 2] = temp;
 			n = -n;
 		}
 

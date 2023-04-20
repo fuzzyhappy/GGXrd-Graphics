@@ -1,6 +1,9 @@
 #version 330 core
 layout (triangles) in;
-layout (triangle_strip, max_vertices = 3) out;
+layout (triangle_strip, max_vertices = 6) out;
+
+const int OBJTYPE_FLOOR = 0;
+const int OBJTYPE_MODEL = 1;
 
 smooth in vec3 geoPos[];	    // Interpolated position in world-space
 smooth in vec3 geoNorm[];	    // Interpolated normal in world-space
@@ -21,7 +24,12 @@ smooth out vec3 tanFragPos;      // Fragment position in tangent space
 smooth out vec4 lightFragPos;    // Fragment position in light space
 out float isOutline;
 
-void main() {  
+uniform float outline;
+
+
+uniform int objType;            // 0 for floor and 1 for model
+
+void main() {
     isOutline = 0.0;
 
     gl_Position = gl_in[0].gl_Position;
@@ -59,6 +67,45 @@ void main() {
 
     EndPrimitive();
     
+    if (objType == OBJTYPE_FLOOR) {
+        return;
+    }
+
     isOutline = 1.0;
-    
+
+    gl_Position = gl_in[0].gl_Position + vec4(geoNorm[0] * outline, 0);
+    fragPos = geoPos[0];
+    fragNorm = -geoNorm[0];
+    fragColor = geoColor[0];
+    fragUV = geoUV[0];
+    tanLightPos = tanLightPosG[0];
+    tanViewer = tanViewerG[0];
+    tanFragPos = tanGeoPos[0];
+    lightFragPos = lightGeoPos[0];
+    EmitVertex();
+      
+
+    gl_Position = gl_in[1].gl_Position + vec4(geoNorm[1] * outline, 0);
+    fragPos = geoPos[1];
+    fragNorm = -geoNorm[1];
+    fragColor = geoColor[1];
+    fragUV = geoUV[1];
+    tanLightPos = tanLightPosG[1];
+    tanViewer = tanViewerG[1];
+    tanFragPos = tanGeoPos[1];
+    lightFragPos = lightGeoPos[1];
+    EmitVertex();
+
+    gl_Position = gl_in[2].gl_Position + vec4(geoNorm[2] * outline, 0);
+    fragPos = geoPos[2];
+    fragNorm = -geoNorm[2];
+    fragColor = geoColor[2];
+    fragUV = geoUV[2];
+    tanLightPos = tanLightPosG[2];
+    tanViewer = tanViewerG[2];
+    tanFragPos = tanGeoPos[2];
+    lightFragPos = lightGeoPos[2];
+    EmitVertex();
+
+    EndPrimitive();
 }  

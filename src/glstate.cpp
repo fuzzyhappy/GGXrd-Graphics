@@ -119,6 +119,7 @@ void GLState::paintGL() {
 		objPtr->draw();
 	}
 	glCullFace(GL_BACK);  // Reset
+	glFrontFace(GL_CCW);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glUseProgram(0);
 
@@ -159,6 +160,7 @@ void GLState::paintGL() {
 	viewProjMat = proj * view;
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_DEPTH_BUFFER_BIT);
+	glUniform1f(glGetUniformLocation(shader, "outline"), 5.0f);
 	for (auto& objPtr : objects) {
 		glm::mat4 modelMat = objPtr->getModelMat();
 		// Upload transform matrices to shader
@@ -172,28 +174,7 @@ void GLState::paintGL() {
 		// Pass object type to shader
 		glUniform1i(objTypeLoc, (int)objPtr->getMeshType());
 		// Draw the mesh
-		if (outlineMode == OUTLINE_ON) {
-			GLuint outline = glGetUniformLocation(shader, "outline");
-			glEnable(GL_STENCIL_TEST);
-			glClear(GL_STENCIL_BUFFER_BIT);
-			glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-			glStencilFunc(GL_ALWAYS, 1, 0xFF);
-			glStencilMask(0xFF);
-			objPtr->draw();
-			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-			glStencilMask(0x00);
-			glDisable(GL_DEPTH_TEST);
-			glUniform1f(outline, 0.005f);
-			objPtr->draw();
-			glUniform1f(outline, 0.0f);
-			glStencilMask(0xFF);
-			glStencilFunc(GL_ALWAYS, 1, 0xFF);
-			glEnable(GL_DEPTH_TEST);
-			glDisable(GL_STENCIL_TEST);
-		}
-		else {
-			objPtr->draw();
-		}	
+		objPtr->draw();
 	}
 
 	glUseProgram(0);
