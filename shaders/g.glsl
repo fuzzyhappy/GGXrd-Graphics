@@ -58,7 +58,4 @@ void main() {
     EmitVertex();
 
     EndPrimitive();
-    
-    isOutline = 1.0;
-    
 }  

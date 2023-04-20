@@ -26,11 +26,8 @@ smooth in vec3 fragPos;		    // Interpolated position in world-space
 smooth in vec3 fragNorm;	    // Interpolated normal in world-space
 smooth in vec3 fragColor;	    // Interpolated color (for Gouraud shading)
 smooth in vec2 fragUV;          // Interpolated texture coordinates
-smooth in vec3 tanLightPos;     // Light position in tangent space
-smooth in vec3 tanViewer;       // Viewing vector in tangent space
-smooth in vec3 tanFragPos;      // Fragment position in tangent space
 smooth in vec4 lightFragPos;    // Fragment position in light space
-smooth in float isOutline;    // Fragment position in light space
+smooth in float isOutline;   
 
 out vec3 outCol;	         // Final pixel color
 
@@ -82,16 +79,37 @@ float calculateShadow(vec4 light_frag_pos) {  // TODO: add other parameters if n
 	return depth > closestDepth ? 1.0 : 0.0;
 }
 
+vec3 renderFloor() {
+	vec3 objColor = vec3(.7, .7, .7);
+	float ambStr, diffStr, specStr, specExp;
+	ambStr = floorAmbStr;
+	diffStr = floorDiffStr;
+	specStr = floorSpecStr;
+	specExp = floorSpecExp;
+	float shadow = calculateShadow(lightFragPos);        // TODO: add more parameters if necessary
+	objColor -= 0.2 * shadow;
+	return objColor;
+}
+
+vec3 renderMesh() {
+	return vec3(1.0);
+}
+
 void main() {
 	// Decide material attributes
 	vec3 objColor = floorColor;
 	float ambStr = floorAmbStr, diffStr = floorDiffStr, specStr = floorSpecStr, specExp = floorSpecExp;
-	if (objType == OBJTYPE_FLOOR) {
-		objColor = vec3(.7, .7, .7);
-		ambStr = floorAmbStr;
-		diffStr = floorDiffStr;
-		specStr = floorSpecStr;
-		specExp = floorSpecExp;
+	if (shadingMode == SHADINGMODE_NORMALS) {
+		outCol = normalize(fragNorm) * 0.5 + vec3(0.5);
+		return;
+	}
+	else if (isOutline != 0.0) {
+		outCol = vec3(0.0);
+		return;
+	}
+	else if (objType == OBJTYPE_FLOOR) {
+		outCol = renderFloor();
+		return;
 	}
 	else if (objType == OBJTYPE_MODEL) {
 		objColor = vec3(1.0, 1.0, 1.0);
@@ -103,57 +121,49 @@ void main() {
 		specExp = modelSpecExp;
 	}
 
-	if (shadingMode == SHADINGMODE_NORMALS) {
-		outCol = normalize(fragNorm) * 0.5 + vec3(0.5);
-	}
-	else if (shadingMode == SHADINGMODE_CEL) {
-		outCol = vec3(1.0);
-		for (int i = 0; i < MAX_LIGHTS; i++) {
-			if (lights[i].enabled) {
-				vec3 normal = normalize(fragNorm);
+	
+	outCol = vec3(1.0);
+	for (int i = 0; i < MAX_LIGHTS; i++) {
+		if (lights[i].enabled) {
+			vec3 normal = normalize(fragNorm);
 
-				vec3 lightDir;
-				if (lights[i].type == LIGHTTYPE_POINT)
-					lightDir = normalize(lights[i].pos - fragPos);
-				else if (lights[i].type == LIGHTTYPE_DIRECTIONAL) {
-					lightDir = normalize(lights[i].pos);
-				}
+			vec3 lightDir;
+			if (lights[i].type == LIGHTTYPE_POINT)
+				lightDir = normalize(lights[i].pos - fragPos);
+			else if (lights[i].type == LIGHTTYPE_DIRECTIONAL) {
+				lightDir = normalize(lights[i].pos);
+			}
 
-				float ambient = ambStr;
-
-				//float diffuse = max(dot(normal, lightDir), 0.0) * diffStr;
-
-				vec3 viewDir;
-				viewDir = normalize(camPos - fragPos);
-
+			if (shadingMode == SHADINGMODE_CEL) {
+				vec3 viewDir = normalize(camPos - fragPos);
 				vec4 ilm = texture(texModelIlm, fragUV);
+
 				float diffuse = dot(normal, lightDir);
 				vec3 reflectDir = -lightDir - 2 * dot(-lightDir, normal) * normal;
 				float specular = dot(viewDir, reflectDir);
 
-				//vec3 reflectDir = -lightDir - 2 * dot(-lightDir, normal) * normal;
-				//float specular = max(dot(viewDir, reflectDir), 0.0);
-				//specular = pow(dot(viewDir, reflectDir), specExp) * specStr;
-
-				// TODO 4-2
-				// Calculate shadow using the function calculateShadow, and modify the line (calculating the final color) below
-				float shadow;
-				if (shadowMapMode == SHADOW_MAPPING_ON && objType == OBJTYPE_FLOOR)
-					shadow = calculateShadow(lightFragPos);        // TODO: add more parameters if necessary
-					outCol -= 0.2 * shadow;
+				float diffuseThreshhold = 1-ilm.g;
+				float specularThreshhold = 1-ilm.b;
 				
-				if (diffuse <= 1-ilm.g && objType == OBJTYPE_MODEL) {
+				if (diffuse <= diffuseThreshhold) {
 					outCol *= texture(texModelSss, fragUV).rgb;
 				}
-				if (specular >= 1-ilm.b && objType == OBJTYPE_MODEL) {
+				if (specular >= specularThreshhold) {
 					outCol += 0.2*ilm.r;
 				}
+			} 
+
+			else {
+				vec3 viewDir = normalize(camPos - fragPos);
+
+				float ambient = ambStr;
+				float diffuse = max(dot(normal, lightDir), 0.0) * diffStr;
+				vec3 reflectDir = -lightDir - 2 * dot(-lightDir, normal) * normal;
+				float specular = max(dot(viewDir, reflectDir), 0.0);
+				specular = pow(dot(viewDir, reflectDir), specExp) * specStr;
 			}
 		}
-		if (isOutline != 0.0) {
-			outCol = vec3(0.0);
-			return;
-		}
-		outCol *= objColor;
 	}
+	outCol *= objColor;
+	
 }
