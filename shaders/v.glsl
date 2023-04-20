@@ -56,6 +56,8 @@ uniform float cubeDiffStr;
 uniform float cubeSpecStr;
 uniform float cubeSpecExp;
 
+uniform float outline;
+
 void main() {
 	// Get world-space position and normal
 	geoPos = vec3(modelMat * vec4(pos, 1.0));

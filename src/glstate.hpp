@@ -39,6 +39,10 @@ public:
 		SHADOW_MAPPING_ON = 0,      // Toggle shadow mapping
 		SHADOW_MAPPING_OFF = 1,     // Turn off
 	};
+	enum OutlineMode {
+		OUTLINE_ON = 0,      // Toggle outline
+		OUTLINE_OFF = 1,     // Turn off
+	};
 
 	bool isInit() const { return init; }
 	void readConfig(std::string filename);	// Read from a config file
@@ -47,9 +51,11 @@ public:
 	ShadingMode getShadingMode() const { return shadingMode; }
 	NormalMapMode getNormalMapMode() const { return normalMapMode; }
 	ShadowMapMode getShadowMapMode() const { return shadowMapMode; }
+	OutlineMode getOutlineMode() const { return outlineMode; }
 	void setShadingMode(ShadingMode sm);
 	void setNormalMapMode(NormalMapMode nmm);
 	void setShadowMapMode(ShadowMapMode smm);
+	void setOutlineMode(OutlineMode om);
 
 	// Object properties
 	float getAmbientStrength() const;
@@ -109,6 +115,7 @@ protected:
 	ShadingMode shadingMode;
 	NormalMapMode normalMapMode;
 	ShadowMapMode shadowMapMode;
+	OutlineMode outlineMode;
 
 	// Camera state
 	int width, height;		// Width and height of the window
@@ -144,6 +151,7 @@ protected:
 	GLuint shadingModeLoc;	       // Shading mode location
 	GLuint normalMapModeLoc;       // Normal mapping mode location
 	GLuint shadowMapModeLoc;       // Shadow mapping mode location
+	GLuint outlineModeLoc;		   // Outline mode location
 	GLuint camPosLoc;		       // Camera position location
 	GLuint floorColorLoc, 	modelColorLoc;		    // Object color
 	GLuint floorAmbStrLoc, 	modelAmbStrLoc;		// Ambient strength location
