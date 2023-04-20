@@ -381,6 +381,7 @@ void GLState::initShaders() {
 	// Compile and link shader files
 	std::vector<GLuint> shaders;
 	shaders.push_back(compileShader(GL_VERTEX_SHADER, "shaders/v.glsl"));
+	shaders.push_back(compileShader(GL_GEOMETRY_SHADER, "shaders/g.glsl"));
 	shaders.push_back(compileShader(GL_FRAGMENT_SHADER, "shaders/f.glsl"));
 	shader = linkProgram(shaders);
 	std::vector<GLuint> depthShaders;  // the shader to get depth map

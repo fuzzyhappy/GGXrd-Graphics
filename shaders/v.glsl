@@ -15,14 +15,14 @@ layout(location = 2) in vec2 uv;	        // Texture coordinates
 layout(location = 3) in vec3 tangent;	    // Right vector in tangent space
 layout(location = 4) in vec3 bitangent;	    // Forward vector in tangent space
 
-smooth out vec3 fragPos;	    // Interpolated position in world-space
-smooth out vec3 fragNorm;	    // Interpolated normal in world-space
-smooth out vec3 fragColor;	    // Interpolated color (for Gouraud shading)
-smooth out vec2 fragUV;         // Interpolated texture coordinates
-smooth out vec3 tanLightPos;    // Light position in tangent space
-smooth out vec3 tanViewer;      // Viewing vector in tangent space
-smooth out vec3 tanFragPos;     // Fragment position in tangent space
-smooth out vec4 lightFragPos;   // Fragment position in light space
+smooth out vec3 geoPos;	    // Interpolated position in world-space
+smooth out vec3 geoNorm;	    // Interpolated normal in world-space
+smooth out vec3 geoColor;	    // Interpolated color (for Gouraud shading)
+smooth out vec2 geoUV;         // Interpolated texture coordinates
+smooth out vec3 tanLightPosG;    // Light position in tangent space
+smooth out vec3 tanViewerG;      // Viewing vector in tangent space
+smooth out vec3 tanGeoPos;     // Geoment position in tangent space
+smooth out vec4 lightGeoPos;   // Geoment position in light space
 
 // Light information
 struct LightData {
@@ -58,29 +58,29 @@ uniform float cubeSpecExp;
 
 void main() {
 	// Get world-space position and normal
-	fragPos = vec3(modelMat * vec4(pos, 1.0));
-	fragNorm = vec3(modelMat * vec4(norm, 0.0));
+	geoPos = vec3(modelMat * vec4(pos, 1.0));
+	geoNorm = vec3(modelMat * vec4(norm, 0.0));
 
-	// Get light-space position, pass to fragment shader
-	lightFragPos = lightSpaceMat * vec4(fragPos, 1.0);
+	// Get light-space position, pass to geoment shader
+	lightGeoPos = lightSpaceMat * vec4(geoPos, 1.0);
 
 	// TODO 2-1 TBN system construction
 
 	// TODO 2-2 Convert lighting related parameters based on TBN system
-	//          Hint: "lights[0].pos", "camPos", and "fragPos" to tangent space: light position ("tanLightPos"), camera position ("tanViewer") and fragment position ("tanFragPos") to tangent space
+	//          Hint: "lights[0].pos", "camPos", and "geoPos" to tangent space: light position ("tanLightPosG"), camera position ("tanViewerG") and geoment position ("tanGeoPos") to tangent space
 	vec3 n = normalize(norm);
 	vec3 t = normalize(tangent);
 	vec3 b = normalize(bitangent);
 	mat3 TBN = mat3(t, b, n);
 	TBN = transpose(TBN);
 
-	tanLightPos = TBN * lights[0].pos;
-	tanViewer = TBN * camPos;
-	tanFragPos = TBN * fragPos;
+	tanLightPosG = TBN * lights[0].pos;
+	tanViewerG = TBN * camPos;
+	tanGeoPos = TBN * geoPos;
 
-	// Pass the interpolated texture coordinates to the fragment shader
-	fragUV = uv;
+	// Pass the interpolated texture coordinates to the geoment shader
+	geoUV = uv;
 
 	// Output clip-space position
-	gl_Position = viewProjMat * vec4(fragPos, 1.0);
+	gl_Position = viewProjMat * vec4(geoPos, 1.0);
 }

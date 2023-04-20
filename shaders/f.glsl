@@ -26,12 +26,11 @@ smooth in vec3 fragPos;		    // Interpolated position in world-space
 smooth in vec3 fragNorm;	    // Interpolated normal in world-space
 smooth in vec3 fragColor;	    // Interpolated color (for Gouraud shading)
 smooth in vec2 fragUV;          // Interpolated texture coordinates
-// Normal mapping
 smooth in vec3 tanLightPos;     // Light position in tangent space
 smooth in vec3 tanViewer;       // Viewing vector in tangent space
 smooth in vec3 tanFragPos;      // Fragment position in tangent space
-// Shadow mapping
 smooth in vec4 lightFragPos;    // Fragment position in light space
+smooth in float isOutline;    // Fragment position in light space
 
 out vec3 outCol;	         // Final pixel color
 
@@ -105,40 +104,19 @@ void main() {
 	}
 
 	if (shadingMode == SHADINGMODE_NORMALS) {
-		if (normalMapMode == NORMAL_MAPPING_ON && objType == OBJTYPE_MODEL)
-			outCol = texture(texModelNrm, fragUV).xyz;  // Get normal from normal map
-		else
-			outCol = normalize(fragNorm) * 0.5 + vec3(0.5);
+		outCol = normalize(fragNorm) * 0.5 + vec3(0.5);
 	}
 	else if (shadingMode == SHADINGMODE_CEL) {
 		outCol = vec3(1.0);
 		for (int i = 0; i < MAX_LIGHTS; i++) {
 			if (lights[i].enabled) {
-				vec3 normal;
-
-				if (normalMapMode == NORMAL_MAPPING_ON && objType == OBJTYPE_MODEL) {
-					// TODO 3-1
-					// Get the fragment normal, store it in "normal" SEE LINE 111
-					normal = normalize(fragNorm);
-					//normal = vec3(texture(texModelNrm, fragUV));
-					//normal = 2 * normal;
-					//normal = normal - 1.0;
-					//normal = normalize(normal);
-				}
-				else
-					normal = normalize(fragNorm);
+				vec3 normal = normalize(fragNorm);
 
 				vec3 lightDir;
 				if (lights[i].type == LIGHTTYPE_POINT)
 					lightDir = normalize(lights[i].pos - fragPos);
 				else if (lights[i].type == LIGHTTYPE_DIRECTIONAL) {
-					if (normalMapMode == NORMAL_MAPPING_ON && objType == OBJTYPE_MODEL) {
-						// TODO 3-2
-						lightDir = normalize(tanLightPos);
-						// Get vector to the light in tangent space, store it in "lightDir", SEE LINE 120
-					}
-					else
-						lightDir = normalize(lights[i].pos);
+					lightDir = normalize(lights[i].pos);
 				}
 
 				float ambient = ambStr;
@@ -146,18 +124,13 @@ void main() {
 				//float diffuse = max(dot(normal, lightDir), 0.0) * diffStr;
 
 				vec3 viewDir;
-				if (normalMapMode == NORMAL_MAPPING_ON && objType == OBJTYPE_MODEL) {
-					// TODO 3-3
-					// Get vector to the viewer in tangent space, store it in "viewDir", SEE LINE 136
-				}
-				else
-					viewDir = normalize(camPos - fragPos);
+				viewDir = normalize(camPos - fragPos);
 
 
 				vec4 ilm = texture(texModelIlm, fragUV);
 				float diffuse = dot(normal, lightDir);
 				vec3 reflectDir = -lightDir - 2 * dot(-lightDir, normal) * normal;
-				float specular = pow(dot(viewDir, reflectDir), ilm.r);
+				float specular = dot(viewDir, reflectDir);
 
 				//vec3 reflectDir = -lightDir - 2 * dot(-lightDir, normal) * normal;
 				//float specular = max(dot(viewDir, reflectDir), 0.0);
@@ -176,7 +149,7 @@ void main() {
 					outCol *= texture(texModelSss, fragUV).rgb;
 				}
 				if (specular >= 1-ilm.b && objType == OBJTYPE_MODEL) {
-					outCol *= 1.15;
+					outCol += 0.2*ilm.r;
 				}
 			}
 		}

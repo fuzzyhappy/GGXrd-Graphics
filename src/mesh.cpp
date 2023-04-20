@@ -130,6 +130,10 @@ void Mesh::load(std::string filename, bool keepLocalGeometry) {
 		);
 	};
 
+	auto computeDot = [=](glm::vec3 v1, glm::vec3 v2) {  // glm::cross
+		return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
+	};
+
 	auto computeNorm = [=](glm::vec3 v) {  // glm::normalize
 		float mag = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
 		return v / mag;
@@ -174,7 +178,6 @@ void Mesh::load(std::string filename, bool keepLocalGeometry) {
 		b *= scale;
 
 		glm::vec3 n = glm::vec3(1.0);
-		//n = computeCross(t, b);
 		n = (vertices[i+0].norm + vertices[i+1].norm + vertices[i+2].norm) * 0.33f;
 
 		// copy over TBN frame over vertices
