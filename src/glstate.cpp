@@ -26,6 +26,7 @@ GLState::GLState() :
 	modelMatDepthLoc(0),
 	lightSpaceMatLoc(0),
 	lightSpaceMatDepthLoc(0),
+	geoObjTypeLoc(0),
 	objTypeLoc(0),
 	viewProjMatLoc(0),
 	shadingModeLoc(0),
@@ -172,6 +173,7 @@ void GLState::paintGL() {
 		glUniform3fv(camPosLoc, 1, glm::value_ptr(camPos));
 
 		// Pass object type to shader
+		glUniform1i(geoObjTypeLoc, (int)objPtr->getMeshType());
 		glUniform1i(objTypeLoc, (int)objPtr->getMeshType());
 		// Draw the mesh
 		objPtr->draw();
@@ -413,6 +415,7 @@ void GLState::initShaders() {
 	// Get uniform locations for shader
 	modelMatLoc		 = glGetUniformLocation(shader, "modelMat");
 	lightSpaceMatLoc = glGetUniformLocation(shader, "lightSpaceMat");
+	geoObjTypeLoc	 = glGetUniformLocation(shader, "geoObjType");
 	objTypeLoc		 = glGetUniformLocation(shader, "objType");
 	viewProjMatLoc	 = glGetUniformLocation(shader, "viewProjMat");
 	shadingModeLoc	 = glGetUniformLocation(shader, "shadingMode");

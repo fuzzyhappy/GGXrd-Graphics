@@ -145,7 +145,8 @@ protected:
 	GLuint modelMatLoc;	           // Model-to-world matrix location, used in shader
 	GLuint modelMatDepthLoc;	   // Model-to-world matrix location, used in depth shader
 	GLuint lightSpaceMatLoc;       // World-to-light matrix location, used in shader
-	GLuint lightSpaceMatDepthLoc;  // World-to-light matrix location, used in depth shader
+	GLuint lightSpaceMatDepthLoc;  // World-to-light matrix location, used in depth 
+	GLuint geoObjTypeLoc;          
 	GLuint objTypeLoc;             // Object type location (decide which material attributes to use and which texture to map)
 	GLuint viewProjMatLoc;	       // World-to-clip matrix location
 	GLuint shadingModeLoc;	       // Shading mode location
