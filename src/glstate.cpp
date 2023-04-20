@@ -14,6 +14,7 @@ GLState::GLState() :
 	shadingMode(SHADINGMODE_CEL),
 	normalMapMode(NORMAL_MAPPING_ON),
 	shadowMapMode(SHADOW_MAPPING_ON),
+	outlineMode(OUTLINE_ON),
 	width(1), height(1),
 	fovy(45.0f),
 	camCoords(0.0f, 1.0f, 4.5f),
@@ -30,6 +31,7 @@ GLState::GLState() :
 	shadingModeLoc(0),
 	normalMapModeLoc(0),
 	shadowMapModeLoc(0),
+	outlineModeLoc(0),
 	camPosLoc(0),
 	floorColorLoc(0),
 	floorAmbStrLoc(0),
@@ -65,6 +67,7 @@ void GLState::initializeGL() {
 	setShadingMode(SHADINGMODE_CEL);
 	setNormalMapMode(NORMAL_MAPPING_ON);
 	setShadowMapMode(SHADOW_MAPPING_ON);
+	setOutlineMode(OUTLINE_ON);
 
 	// Create lights
 	lights.resize(Light::MAX_LIGHTS);
@@ -154,7 +157,8 @@ void GLState::paintGL() {
 	view = glm::rotate(view, glm::radians(camCoords.x), glm::vec3(0.0f, 1.0f, 0.0f));
 	// Combine transformations
 	viewProjMat = proj * view;
-
+	glEnable(GL_DEPTH_TEST);
+	glClear(GL_DEPTH_BUFFER_BIT);
 	for (auto& objPtr : objects) {
 		glm::mat4 modelMat = objPtr->getModelMat();
 		// Upload transform matrices to shader
@@ -167,9 +171,29 @@ void GLState::paintGL() {
 
 		// Pass object type to shader
 		glUniform1i(objTypeLoc, (int)objPtr->getMeshType());
-
 		// Draw the mesh
-		objPtr->draw();
+		if (outlineMode == OUTLINE_ON) {
+			GLuint outline = glGetUniformLocation(shader, "outline");
+			glEnable(GL_STENCIL_TEST);
+			glClear(GL_STENCIL_BUFFER_BIT);
+			glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+			glStencilFunc(GL_ALWAYS, 1, 0xFF);
+			glStencilMask(0xFF);
+			objPtr->draw();
+			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+			glStencilMask(0x00);
+			glDisable(GL_DEPTH_TEST);
+			glUniform1f(outline, 0.005f);
+			objPtr->draw();
+			glUniform1f(outline, 0.0f);
+			glStencilMask(0xFF);
+			glStencilFunc(GL_ALWAYS, 1, 0xFF);
+			glEnable(GL_DEPTH_TEST);
+			glDisable(GL_STENCIL_TEST);
+		}
+		else {
+			objPtr->draw();
+		}	
 	}
 
 	glUseProgram(0);
@@ -213,6 +237,15 @@ void GLState::setShadowMapMode(ShadowMapMode smm) {
 	// Update mode in shader
 	glUseProgram(shader);
 	glUniform1i(shadowMapModeLoc, (int)shadowMapMode);
+	glUseProgram(0);
+}
+
+void GLState::setOutlineMode(OutlineMode om) {
+	outlineMode = om;
+
+	// Update mode in shader
+	glUseProgram(shader);
+	glUniform1i(outlineModeLoc, (int)outlineMode);
 	glUseProgram(0);
 }
 
@@ -403,6 +436,7 @@ void GLState::initShaders() {
 	shadingModeLoc	 = glGetUniformLocation(shader, "shadingMode");
 	normalMapModeLoc = glGetUniformLocation(shader, "normalMapMode");
 	shadowMapModeLoc = glGetUniformLocation(shader, "shadowMapMode");
+	outlineModeLoc   = glGetUniformLocation(shader, "outlineMode");
 	camPosLoc		 = glGetUniformLocation(shader, "camPos");
 	floorColorLoc	 = glGetUniformLocation(shader, "floorColor");
 	floorAmbStrLoc	 = glGetUniformLocation(shader, "floorAmbStr");

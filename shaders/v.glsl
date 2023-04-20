@@ -56,9 +56,11 @@ uniform float cubeDiffStr;
 uniform float cubeSpecStr;
 uniform float cubeSpecExp;
 
+uniform float outline;
+
 void main() {
 	// Get world-space position and normal
-	fragPos = vec3(modelMat * vec4(pos, 1.0));
+	fragPos = vec3(modelMat * vec4(pos + norm * outline, 1.0));
 	fragNorm = vec3(modelMat * vec4(norm, 0.0));
 
 	// Get light-space position, pass to fragment shader

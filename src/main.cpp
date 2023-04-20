@@ -71,6 +71,7 @@ int main(int argc, char** argv) {
 	std::cout << "  l,L:  Toggle shading type (Cel vs. colored normals)" << std::endl;
 	std::cout << "  m,M:  Toggle normal mapping mode (on or off)" << std::endl;
 	std::cout << "  s,S:  Toggle shadow mapping mode (on or off)" << std::endl;
+	std::cout << "  o,O:  Toggle outlining mode (on or off)" << std::endl;
 	std::cout << std::endl;
 
 	// Execute main loop
@@ -212,6 +213,21 @@ void keyPress(unsigned char key, int x, int y) {
 		else if (smm == GLState::SHADOW_MAPPING_OFF) {
 			glState->setShadowMapMode(GLState::SHADOW_MAPPING_ON);
 			std::cout << "Turned on shadow mapping" << std::endl;
+		}
+		glutPostRedisplay();
+		break;
+	}
+	// Toggle outline
+	case 'O':
+	case 'o': {
+		GLState::OutlineMode smm = glState->getOutlineMode();
+		if (smm == GLState::OUTLINE_ON) {
+			glState->setOutlineMode(GLState::OUTLINE_OFF);
+			std::cout << "Turned off outline" << std::endl;
+		}
+		else if (smm == GLState::OUTLINE_OFF) {
+			glState->setOutlineMode(GLState::OUTLINE_ON);
+			std::cout << "Turned on outline" << std::endl;
 		}
 		glutPostRedisplay();
 		break;

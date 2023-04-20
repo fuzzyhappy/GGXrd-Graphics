@@ -35,6 +35,8 @@ smooth in vec4 lightFragPos;    // Fragment position in light space
 
 out vec3 outCol;	         // Final pixel color
 
+uniform float outline;
+
 // Light information
 struct LightData {
 	bool enabled;	// Whether the light is on
@@ -169,8 +171,6 @@ void main() {
 				if (shadowMapMode == SHADOW_MAPPING_ON && objType == OBJTYPE_FLOOR)
 					shadow = calculateShadow(lightFragPos);        // TODO: add more parameters if necessary
 					outCol -= 0.2 * shadow;
-
-				float threshhold = 0;
 				
 				if (diffuse <= 1-ilm.g && objType == OBJTYPE_MODEL) {
 					outCol *= texture(texModelSss, fragUV).rgb;
@@ -179,6 +179,10 @@ void main() {
 					outCol *= 1.15;
 				}
 			}
+		}
+		if (outline != 0.0) {
+			outCol = vec3(0.0);
+			return;
 		}
 		outCol *= objColor;
 	}
