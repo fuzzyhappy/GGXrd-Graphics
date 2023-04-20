@@ -60,4 +60,5 @@ void main() {
     EndPrimitive();
     
     isOutline = 1.0;
+    
 }  

@@ -34,8 +34,6 @@ smooth in float isOutline;    // Fragment position in light space
 
 out vec3 outCol;	         // Final pixel color
 
-uniform float outline;
-
 // Light information
 struct LightData {
 	bool enabled;	// Whether the light is on
@@ -128,7 +126,6 @@ void main() {
 				vec3 viewDir;
 				viewDir = normalize(camPos - fragPos);
 
-
 				vec4 ilm = texture(texModelIlm, fragUV);
 				float diffuse = dot(normal, lightDir);
 				vec3 reflectDir = -lightDir - 2 * dot(-lightDir, normal) * normal;
@@ -153,7 +150,7 @@ void main() {
 				}
 			}
 		}
-		if (outline != 0.0) {
+		if (isOutline != 0.0) {
 			outCol = vec3(0.0);
 			return;
 		}

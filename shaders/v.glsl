@@ -80,7 +80,7 @@ void main() {
 	tanViewerG = TBN * camPos;
 	tanGeoPos = TBN * geoPos;
 
-	// Pass the interpolated texture coordinates to the geoment shader
+	// Pass the interpolated texture coordinates to the geometry shader
 	geoUV = uv;
 
 	// Output clip-space position
