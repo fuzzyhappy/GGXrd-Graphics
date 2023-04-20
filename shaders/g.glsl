@@ -2,6 +2,11 @@
 layout (triangles) in;
 layout (triangle_strip, max_vertices = 3) out;
 
+const int OBJTYPE_FLOOR = 0;
+const int OBJTYPE_MODEL = 1;
+
+uniform int geoObjType;            // 0 for floor and 1 for model
+
 smooth in vec3 geoPos[];	    // Interpolated position in world-space
 smooth in vec3 geoNorm[];	    // Interpolated normal in world-space
 smooth in vec3 geoColor[];	    // Interpolated color (for Gouraud shading)
@@ -58,4 +63,8 @@ void main() {
     EmitVertex();
 
     EndPrimitive();
+
+    if (geoObjType == OBJTYPE_MODEL) {
+        
+    }
 }  
