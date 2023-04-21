@@ -65,12 +65,17 @@ int main(int argc, char** argv) {
 	std::cout << "  SHIFT + scroll wheel to change active light distance" << std::endl;
 	std::cout << "Keyboard controls:" << std::endl;
 	std::cout << "  0:  Turn off all cel shading features" << std::endl;
-	std::cout << "  1-9:  Toggle cel shading features" << std::endl;
+	std::cout << "  1:  Toggle face normal interpolation" << std::endl;
+	std::cout << "  2:  Toggle SSS tint map for cel shading" << std::endl;
+	std::cout << "  3:  Toggle occlusion map for cel shading" << std::endl;
+	std::cout << "  4:  Toggle specular for cel shading" << std::endl;
+	std::cout << "  t,T:  Toggle texture mapping" << std::endl;
+	std::cout << "  i,I:  Toggle interior lines" << std::endl;
+	std::cout << "  o,O:  Toggle outlining mode (on or off)" << std::endl;
 	std::cout << "  h,H:  Move the object along y axis" << std::endl;
 	std::cout << "  j,J:  Move the object along x axis" << std::endl;
 	std::cout << "  k,K:  Move the object along z axis" << std::endl;
 	std::cout << "  l,L:  Cycle through shading type (Colored normals vs. Cel vs. Phong)" << std::endl;
-	std::cout << "  o,O:  Toggle outlining mode (on or off)" << std::endl;
 	std::cout << std::endl;
 
 	// Execute main loop
