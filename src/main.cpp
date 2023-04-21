@@ -76,7 +76,8 @@ int main(int argc, char** argv) {
 	std::cout << "  j,J:  Move the object along x axis" << std::endl;
 	std::cout << "  k,K:  Move the object along z axis" << std::endl;
 	std::cout << "  r,R:  Rotate the object" << std::endl;
-	std::cout << "  l,L:  Cycle through shading type (Colored normals vs. Cel vs. Phong)" << std::endl;
+	std::cout << "  l,L:  Cycle through shading type (Cel vs. Phong)" << std::endl;
+	std::cout << "  n,N:  Cycle through shading type (Colored Normals vs. Cel)" << std::endl;
 	std::cout << std::endl;
 
 	// Execute main loop
@@ -245,13 +246,13 @@ void keyPress(unsigned char key, int x, int y) {
 	case 'l': 
 	case 'L': {
 		GLState::ShadingMode sm = glState->getShadingMode();
-		if (sm != GLState::SHADINGMODE_PHONG) {
-			glState->setShadingMode(GLState::SHADINGMODE_PHONG);
-			std::cout << "Turned on Phong shading" << std::endl;
-		}
-		else if (sm == GLState::SHADINGMODE_PHONG) {
+		if (sm == GLState::SHADINGMODE_PHONG || sm == GLState::SHADINGMODE_NONE) {
 			glState->setShadingMode(GLState::SHADINGMODE_CEL);
 			std::cout << "Turned on cel shading" << std::endl;
+		}
+		else {
+			glState->setShadingMode(GLState::SHADINGMODE_PHONG);
+			std::cout << "Turned on Phong shading" << std::endl;
 		}
 		glutPostRedisplay();
 		break; 

@@ -167,6 +167,7 @@ protected:
 	unsigned int activeObj = 1;   // The current active model (1-3)
 	float moveStep = 0.1f;  // Translation step
 	float rotStep = 3.14159265 / 24;
+	float outlineFactor = 0.003f;
 
 	// Textures
 	Texture textures;

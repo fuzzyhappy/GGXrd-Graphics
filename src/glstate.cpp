@@ -161,7 +161,7 @@ void GLState::paintGL() {
 	viewProjMat = proj * view;
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	glUniform1f(glGetUniformLocation(shader, "outline"), (outlineMode == OUTLINE_ON) ? 0.0015f : 0);
+	glUniform1f(glGetUniformLocation(shader, "outline"), (outlineMode == OUTLINE_ON) ? outlineFactor : 0);
 	for (auto& objPtr : objects) {
 		glm::mat4 modelMat = objPtr->getModelMat();
 		// Upload transform matrices to shader
