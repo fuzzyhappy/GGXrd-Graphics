@@ -246,13 +246,13 @@ void keyPress(unsigned char key, int x, int y) {
 	case 'l': 
 	case 'L': {
 		GLState::ShadingMode sm = glState->getShadingMode();
-		if (sm == GLState::SHADINGMODE_PHONG || sm == GLState::SHADINGMODE_NONE) {
-			glState->setShadingMode(GLState::SHADINGMODE_CEL);
-			std::cout << "Turned on cel shading" << std::endl;
-		}
-		else {
+		if (sm != GLState::SHADINGMODE_PHONG) {
 			glState->setShadingMode(GLState::SHADINGMODE_PHONG);
 			std::cout << "Turned on Phong shading" << std::endl;
+		}
+		else {
+			glState->setShadingMode(GLState::SHADINGMODE_CEL);
+			std::cout << "Turned on cel shading" << std::endl;
 		}
 		glutPostRedisplay();
 		break; 

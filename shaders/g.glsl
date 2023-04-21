@@ -20,7 +20,6 @@ smooth in vec4 lightGeoPos[];   // Geoment position in light space
 
 smooth out vec3 fragPos;		    // Interpolated position in world-space
 smooth out vec3 fragNorm;	    // Interpolated normal in world-space
-smooth out vec3 fragColor;	    // Interpolated color (for Gouraud shading)
 smooth out vec2 fragUV;          // Interpolated texture coordinates
 smooth out vec3 tanLightPos;     // Light position in tangent space
 smooth out vec3 tanViewer;       // Viewing vector in tangent space
@@ -38,7 +37,6 @@ void main() {
         gl_Position = gl_in[i].gl_Position;
         fragPos = geoPos[i];
         fragNorm = normalsMode == NORMALSMODE_FACE ? geoFNorm[i] : geoVNorm[i];
-        fragColor = geoColor[i];
         fragUV = geoUV[i];
         lightFragPos = lightGeoPos[i];
         EmitVertex();
@@ -56,7 +54,6 @@ void main() {
         gl_Position = gl_in[i].gl_Position + viewNorm;
         fragPos = geoPos[i] + geoVNorm[i] * outline;
         fragNorm = normalsMode == NORMALSMODE_FACE ? geoFNorm[i] : geoVNorm[i];
-        fragColor = geoColor[i];
         fragUV = geoUV[i];
         lightFragPos = lightGeoPos[i];
         EmitVertex();

@@ -155,29 +155,9 @@ void Mesh::load(std::string filename, bool keepLocalGeometry) {
 		vertices[i+1].uv = raw_uvs[v_elements[i+1][1]];
 		vertices[i+2].uv = raw_uvs[v_elements[i+2][1]];
 
-		// TODO 1-2 Store tangent and bitangent
 		glm::vec3 e1 = vertices[i + 1].pos - vertices[i+0].pos;
 		glm::vec3 e2 = vertices[i + 2].pos - vertices[i+0].pos;
-		float u1 = vertices[i + 1].uv.x - vertices[i+0].uv.x;
-		float u2 = vertices[i + 2].uv.x - vertices[i+0].uv.x;
-		float v1 = vertices[i + 1].uv.y - vertices[i+0].uv.y;
-		float v2 = vertices[i + 2].uv.y - vertices[i+0].uv.y;
-		float scale = 1 / ((u1 * v2) - (u2 * v1));
-
-		glm::vec3 t = glm::vec3(1.0);
-		glm::vec3 b = glm::vec3(1.0);
-
-		t.x = v2 * e1.x - v1 * e2.x;
-		t.y = v2 * e1.y - v1 * e2.y;
-		t.z = v2 * e1.z - v1 * e2.z;
-		b.x = (-u2 * e1.x) + (u1 * e2.x);
-		b.y = (-u2 * e1.y) + (u1 * e2.y);
-		b.z = (-u2 * e1.z) + (u1 * e2.z);
-
-		t *= scale;
-		b *= scale;
-
-		//glm::vec3 n = computeCross(t, b);
+	
 		glm::vec3 n = computeCross(e1, e2);
 		glm::vec3 vn = (vertices[i+0].vnorm + vertices[i+1].vnorm + vertices[i+2].vnorm) * 0.33f;
 		if (computeDot(n, vn) < 0) {
@@ -188,18 +168,10 @@ void Mesh::load(std::string filename, bool keepLocalGeometry) {
 			n = -n;
 		}
 
-		// copy over TBN frame over vertices
-		vertices[i + 0].tangent = t;
+		// copy over face normal over vertices
 		vertices[i + 0].fnorm = n;
-		vertices[i + 0].bitangent = b;
-
-		vertices[i + 1].tangent = t;
 		vertices[i + 1].fnorm = n;
-		vertices[i + 1].bitangent = b;
-
-		vertices[i + 2].tangent = t;
 		vertices[i + 2].fnorm = n;
-		vertices[i + 2].bitangent = b;;
 
 	}
 	vcount = (GLsizei)vertices.size();
@@ -220,10 +192,6 @@ void Mesh::load(std::string filename, bool keepLocalGeometry) {
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(2 * sizeof(glm::vec3)));
 	glEnableVertexAttribArray(3);  // uv
 	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(3 * sizeof(glm::vec3)));  // the last parameter: offset
-	glEnableVertexAttribArray(4);  // tangent
-	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Mesh::Vertex, tangent));
-	glEnableVertexAttribArray(5);  // bitangent
-	glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Mesh::Vertex, bitangent));
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

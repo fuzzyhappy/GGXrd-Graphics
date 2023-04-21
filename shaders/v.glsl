@@ -13,13 +13,10 @@ layout(location = 0) in vec3 pos;			// Model-space position
 layout(location = 1) in vec3 fnorm;		    // Model-space face normal
 layout(location = 2) in vec3 vnorm;		    // Model-space face normal
 layout(location = 3) in vec2 uv;	        // Texture coordinates
-layout(location = 4) in vec3 tangent;	    // Right vector in tangent space
-layout(location = 5) in vec3 bitangent;	    // Forward vector in tangent space
 
 smooth out vec3 geoPos;	    // Interpolated position in world-space
 smooth out vec3 geoFNorm;	    // Interpolated normal in world-space
 smooth out vec3 geoVNorm;	    // Interpolated normal in world-space
-smooth out vec3 geoColor;	    // Interpolated color (for Gouraud shading)
 smooth out vec2 geoUV;         // Interpolated texture coordinates
 smooth out vec4 lightGeoPos;   // Geoment position in light space
 

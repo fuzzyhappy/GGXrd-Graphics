@@ -35,7 +35,6 @@ uniform sampler2D shadowMap;     // Shadow map
 
 smooth in vec3 fragPos;		    // Interpolated position in world-space
 smooth in vec3 fragNorm;	    // Interpolated normal in world-space
-smooth in vec3 fragColor;	    // Interpolated color (for Gouraud shading)
 smooth in vec2 fragUV;          // Interpolated texture coordinates
 smooth in vec4 lightFragPos;    // Fragment position in light space
 smooth in float isOutline;   
@@ -128,7 +127,7 @@ void main() {
 	vec3 objColor = vec3(1.0, 1.0, 1.0); 
 	
 	if (textureMode == TEXTUREMODE_CONST) {
-		objColor *= .7;
+		objColor *= .9;
 	} else {
 		objColor *= texture(texModelColor, fragUV).rgb;
 	}

@@ -40,9 +40,6 @@ public:
 		glm::vec3 fnorm;	    // Normal (up vector in tangent space)
 		glm::vec3 vnorm;	    // Normal (up vector in tangent space)
 		glm::vec2 uv;           // Texture coordinates
-		// Define the tangent/TBN space: tangent, bitangent, and normal
-		glm::vec3 tangent;      // Right vector in tangent space
-		glm::vec3 bitangent;    // Forward vector in tangent space
 	};
 	// Local geometry data
 	std::vector<Vertex> vertices;
