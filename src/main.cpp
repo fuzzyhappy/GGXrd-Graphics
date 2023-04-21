@@ -136,20 +136,134 @@ void reshape(GLint w, GLint h) {
 // Called when a key is pressed
 void keyPress(unsigned char key, int x, int y) {
 	switch (key) {
-	// Toggle shading mode (normals vs Cel)
-	case 'l': 
-	case 'L': {
-		static const char* message[] = {"Shading mode set to Normals", "Shading mode set to Cel", "Shading mode set to Phong"};
-		GLState::ShadingMode sm = glState->getShadingMode();
-		int smint = static_cast<int>(sm);
-		smint = (smint + 1) % 3;
-		GLState::ShadingMode newsm = static_cast<GLState::ShadingMode>( smint );
-		glState->setShadingMode(newsm);
-		std::cout << message[smint] << std::endl;
+	// turn off all implemented functionality
+	case '0': {
+		glState->setShadingMode(GLState::SHADINGMODE_NONE);
+		glState->setNormalsMode(GLState::NORMALSMODE_FACE);
+		glState->setTintMode(GLState::TINTMODE_CONST);
+		glState->setOcclusionMode(GLState::OCCLUSION_OFF);
+		glState->setSpecularMode(GLState::SPECULAR_OFF);
+		glState->setTextureMode(GLState::TEXTUREMODE_CONST);
+		glState->setContourMode(GLState::CONTOUR_OFF);
+		glState->setOutlineMode(GLState::OUTLINE_OFF);
+		break;
+	}
+
+	case '1': {
+		GLState::NormalsMode nm = glState->getNormalsMode();
+		if (nm == GLState::NORMALSMODE_INTERPOLATE) {
+			glState->setNormalsMode(GLState::NORMALSMODE_FACE);
+			std::cout << "Turned off interpolated face normals" << std::endl;
+		}
+		else {
+			glState->setNormalsMode(GLState::NORMALSMODE_INTERPOLATE);
+			std::cout << "Turned on interpolated face normals" << std::endl;
+		}
 		glutPostRedisplay();
 		break; 
 	}
 
+	case '2': {
+		GLState::TintMode tm = glState->getTintMode();
+		if (tm == GLState::TINTMODE_CONST) {
+			glState->setTintMode(GLState::TINTMODE_SSS);
+			std::cout << "Turned on SSS map tinting" << std::endl;
+		}
+		else {
+			glState->setTintMode(GLState::TINTMODE_CONST);
+			std::cout << "Turned on constant tinting" << std::endl;
+		}
+		glutPostRedisplay();
+		break; 
+	}
+
+	case '3': {
+		GLState::OcclusionMode om = glState->getOcclusionMode();
+		if (om == GLState::OCCLUSION_OFF) {
+			glState->setOcclusionMode(GLState::OCCLUSION_ON);
+			std::cout << "Turned on occlusion map" << std::endl;
+		}
+		else {
+			glState->setOcclusionMode(GLState::OCCLUSION_OFF);
+			std::cout << "Turned off occlusion map" << std::endl;
+		}
+		glutPostRedisplay();
+		break; 
+	}
+
+	case '4': {
+		GLState::SpecularMode sm = glState->getSpecularMode();
+		if (sm == GLState::SPECULAR_OFF) {
+			glState->setSpecularMode(GLState::SPECULAR_ON);
+			std::cout << "Turned on cel shading specular" << std::endl;
+		}
+		else {
+			glState->setSpecularMode(GLState::SPECULAR_OFF);
+			std::cout << "Turned off cel shading specular" << std::endl;
+		}
+		glutPostRedisplay();
+		break; 
+	}
+
+	case 't': 
+	case 'T': {
+		GLState::TextureMode tm = glState->getTextureMode();
+		if (tm == GLState::TEXTUREMODE_CONST) {
+			glState->setTextureMode(GLState::TEXTUREMODE_TEX);
+			std::cout << "Turned on texture map" << std::endl;
+		}
+		else {
+			glState->setTextureMode(GLState::TEXTUREMODE_TEX);
+			std::cout << "Turned off texture map" << std::endl;
+		}
+		glutPostRedisplay();
+		break; 
+	}
+
+	case 'i': 
+	case 'I': {
+		GLState::ContourMode cm = glState->getContourMode();
+		if (cm == GLState::CONTOUR_OFF) {
+			glState->setContourMode(GLState::CONTOUR_ON);
+			std::cout << "Turned on interior lines" << std::endl;
+		}
+		else {
+			glState->setContourMode(GLState::CONTOUR_OFF);
+			std::cout << "Turned off interior lines" << std::endl;
+		}
+		glutPostRedisplay();
+		break; 
+	}
+
+	// Toggle shading mode (normals vs Cel)
+	case 'l': 
+	case 'L': {
+		GLState::ShadingMode sm = glState->getShadingMode();
+		if (sm != GLState::SHADINGMODE_PHONG) {
+			glState->setShadingMode(GLState::SHADINGMODE_PHONG);
+			std::cout << "Turned on Phong shading" << std::endl;
+		}
+		else if (sm == GLState::SHADINGMODE_PHONG) {
+			glState->setShadingMode(GLState::SHADINGMODE_CEL);
+			std::cout << "Turned on cel shading" << std::endl;
+		}
+		glutPostRedisplay();
+		break; 
+	}
+	case 'n': 
+	case 'N': {
+		GLState::ShadingMode sm = glState->getShadingMode();
+		if (sm != GLState::SHADINGMODE_NORMALS) {
+			glState->setShadingMode(GLState::SHADINGMODE_NORMALS);
+			std::cout << "Turned on normal shading" << std::endl;
+		}
+		else if (sm == GLState::SHADINGMODE_NORMALS) {
+			glState->setShadingMode(GLState::SHADINGMODE_CEL);
+			std::cout << "Turned off normal shading" << std::endl;
+		}
+		glutPostRedisplay();
+		break; 
+	}
 	// Toggle outline
 	case 'O':
 	case 'o': {
@@ -165,6 +279,7 @@ void keyPress(unsigned char key, int x, int y) {
 		glutPostRedisplay();
 		break;
 	}
+
 	// Move the object along +y
 	case 'h': {
 		auto curObj = glState->getObjects()[glState->getActiveObj()];  // Currently controlled object

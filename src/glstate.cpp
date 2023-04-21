@@ -12,8 +12,12 @@
 // Constructor
 GLState::GLState() :
 	shadingMode(SHADINGMODE_CEL),
-	normalMapMode(NORMAL_MAPPING_ON),
-	shadowMapMode(SHADOW_MAPPING_ON),
+	normalsMode(NORMALSMODE_INTERPOLATE),
+	tintMode(TINTMODE_SSS),
+	occlusionMode(OCCLUSION_ON),
+	specularMode(SPECULAR_ON),
+	textureMode(TEXTUREMODE_TEX),
+	contourMode(CONTOUR_ON),
 	outlineMode(OUTLINE_ON),
 	width(1), height(1),
 	fovy(45.0f),
@@ -26,7 +30,6 @@ GLState::GLState() :
 	modelMatDepthLoc(0),
 	lightSpaceMatLoc(0),
 	lightSpaceMatDepthLoc(0),
-	geoObjTypeLoc(0),
 	objTypeLoc(0),
 	viewProjMatLoc(0),
 	shadingModeLoc(0),
@@ -170,7 +173,6 @@ void GLState::paintGL() {
 		glUniform3fv(camPosLoc, 1, glm::value_ptr(camPos));
 
 		// Pass object type to shader
-		glUniform1i(geoObjTypeLoc, (int)objPtr->getMeshType());
 		glUniform1i(objTypeLoc, (int)objPtr->getMeshType());
 		// Draw the mesh
 		objPtr->draw();
@@ -192,13 +194,73 @@ void GLState::resizeGL(int w, int h) {
 	glViewport(0, 0, w, h);
 }
 
-// Set the shading mode (normals or lighting)
+// Set the shading mode (normals, cels, or Phong)
 void GLState::setShadingMode(ShadingMode sm) {
 	shadingMode = sm;
 
 	// Update mode in shader
 	glUseProgram(shader);
 	glUniform1i(shadingModeLoc, (int)shadingMode);
+	glUseProgram(0);
+}
+
+// Set the shading mode (normals, cels, or Phong)
+void GLState::setNormalsMode(NormalsMode nm) {
+	normalsMode = nm;
+
+	// Update mode in shader
+	glUseProgram(shader);
+	glUniform1i(normalsModeLoc, (int)normalsMode);
+	glUseProgram(0);
+}
+
+// Set the tint mode (const or SSS)
+void GLState::setTintMode(TintMode tm) {
+	tintMode = tm;
+
+	// Update mode in shader
+	glUseProgram(shader);
+	glUniform1i(tintModeLoc, (int)tintMode);
+	glUseProgram(0);
+}
+
+// Set the occlusion mode (on or off)
+void GLState::setOcclusionMode(OcclusionMode om) {
+	occlusionMode = om;
+
+	// Update mode in shader
+	glUseProgram(shader);
+	glUniform1i(occlusionModeLoc, (int)occlusionMode);
+	glUseProgram(0);
+}
+
+// Set the specular mode (on or off)
+void GLState::setSpecularMode(SpecularMode om) {
+	specularMode = om;
+
+	// Update mode in shader
+	glUseProgram(shader);
+	glUniform1i(specularModeLoc, (int)specularMode);
+	glUseProgram(0);
+}
+
+// Set the texture mode (blank or texture)
+void GLState::setTextureMode(TextureMode tm) {
+	textureMode = tm;
+
+	// Update mode in shader
+	glUseProgram(shader);
+	glUniform1i(textureModeLoc, (int)textureMode);
+	glUseProgram(0);
+}
+
+// Set the interior line mode (on or off)
+void GLState::setContourMode(ContourMode tm) {
+	contourMode = tm;
+
+	// Update mode in shader
+	glUseProgram(shader);
+	glUniform1i(contourModeLoc, (int)contourMode);
 	glUseProgram(0);
 }
 
@@ -394,11 +456,18 @@ void GLState::initShaders() {
 	// Get uniform locations for shader
 	modelMatLoc		 = glGetUniformLocation(shader, "modelMat");
 	lightSpaceMatLoc = glGetUniformLocation(shader, "lightSpaceMat");
-	geoObjTypeLoc	 = glGetUniformLocation(shader, "geoObjType");
 	objTypeLoc		 = glGetUniformLocation(shader, "objType");
 	viewProjMatLoc	 = glGetUniformLocation(shader, "viewProjMat");
+
 	shadingModeLoc	 = glGetUniformLocation(shader, "shadingMode");
+	normalsModeLoc	 = glGetUniformLocation(shader, "normalsMode");
+	tintModeLoc		 = glGetUniformLocation(shader, "tintMode");
+	occlusionModeLoc = glGetUniformLocation(shader, "occlusionMode");
+	specularModeLoc  = glGetUniformLocation(shader, "specularMode");
+	textureModeLoc	 = glGetUniformLocation(shader, "textureMode");
+	contourModeLoc	 = glGetUniformLocation(shader, "contourMode");
 	outlineModeLoc   = glGetUniformLocation(shader, "outlineMode");
+	
 	camPosLoc		 = glGetUniformLocation(shader, "camPos");
 	floorColorLoc	 = glGetUniformLocation(shader, "floorColor");
 	floorAmbStrLoc	 = glGetUniformLocation(shader, "floorAmbStr");

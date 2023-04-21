@@ -25,9 +25,9 @@ models/ANS_Mod.obj 1
 
 # Parameters of cube model
 0.05
-0.2
+0.5
 1.0
-64.0
+2.0
 153 153 255
 
 # Parameters of floor model

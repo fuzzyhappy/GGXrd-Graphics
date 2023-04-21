@@ -30,15 +30,32 @@ public:
 	enum ShadingMode {
 		SHADINGMODE_NORMALS = 0,	// View normals as colors
 		SHADINGMODE_CEL = 1,		// Use Cel shading and illumination
-		SHADINGMODE_PHONG = 2
+		SHADINGMODE_PHONG = 2,
+		SHADINGMODE_NONE = 3
 	};
-	enum NormalMapMode {
-		NORMAL_MAPPING_ON = 0,      // Toggle normal mapping
-		NORMAL_MAPPING_OFF = 1,     // Turn off
+	enum NormalsMode {
+		NORMALSMODE_INTERPOLATE = 0,
+		NORMALSMODE_FACE = 1,
 	};
-	enum ShadowMapMode {
-		SHADOW_MAPPING_ON = 0,      // Toggle shadow mapping
-		SHADOW_MAPPING_OFF = 1,     // Turn off
+	enum TintMode {
+		TINTMODE_SSS = 0,
+		TINTMODE_CONST = 1,
+	};
+	enum OcclusionMode {
+		OCCLUSION_ON = 0,
+		OCCLUSION_OFF = 1,
+	};
+	enum SpecularMode {
+		SPECULAR_ON = 0,
+		SPECULAR_OFF = 1,
+	};
+	enum TextureMode {
+		TEXTUREMODE_TEX = 0,
+		TEXTUREMODE_CONST = 1,
+	};
+	enum ContourMode {
+		CONTOUR_ON = 0,
+		CONTOUR_OFF = 1,
 	};
 	enum OutlineMode {
 		OUTLINE_ON = 0,      // Toggle outline
@@ -50,8 +67,20 @@ public:
 
 	// Drawing modes
 	ShadingMode getShadingMode() const { return shadingMode; }
+	NormalsMode getNormalsMode() const { return normalsMode; }
+	TintMode getTintMode() const { return tintMode; }
+	OcclusionMode getOcclusionMode() const { return occlusionMode; }
+	SpecularMode getSpecularMode() const { return specularMode; }
+	TextureMode getTextureMode() const { return textureMode; }
+	ContourMode getContourMode() const { return contourMode; }
 	OutlineMode getOutlineMode() const { return outlineMode; }
 	void setShadingMode(ShadingMode sm);
+	void setNormalsMode(NormalsMode nm);
+	void setTintMode(TintMode tm);
+	void setOcclusionMode(OcclusionMode om);
+	void setSpecularMode(SpecularMode om);
+	void setTextureMode(TextureMode tm);
+	void setContourMode(ContourMode tm);
 	void setOutlineMode(OutlineMode om);
 
 	// Object properties
@@ -109,10 +138,14 @@ protected:
 	static glm::mat4 calModelMat(const glm::mat3 rotMat, const glm::vec3 translation);
 
 	// Drawing modes
-	ShadingMode shadingMode;
-	NormalMapMode normalMapMode;
-	ShadowMapMode shadowMapMode;
-	OutlineMode outlineMode;
+	ShadingMode 	shadingMode;
+	NormalsMode 	normalsMode;
+	TintMode 		tintMode;
+	OcclusionMode 	occlusionMode;
+	SpecularMode 	specularMode;
+	TextureMode 	textureMode;
+	ContourMode 	contourMode;
+	OutlineMode 	outlineMode;
 
 	// Camera state
 	int width, height;		// Width and height of the window
@@ -143,10 +176,15 @@ protected:
 	GLuint modelMatDepthLoc;	   // Model-to-world matrix location, used in depth shader
 	GLuint lightSpaceMatLoc;       // World-to-light matrix location, used in shader
 	GLuint lightSpaceMatDepthLoc;  // World-to-light matrix location, used in depth 
-	GLuint geoObjTypeLoc;          
 	GLuint objTypeLoc;             // Object type location (decide which material attributes to use and which texture to map)
 	GLuint viewProjMatLoc;	       // World-to-clip matrix location
 	GLuint shadingModeLoc;	       // Shading mode location
+	GLuint normalsModeLoc;
+	GLuint tintModeLoc;
+	GLuint occlusionModeLoc;
+	GLuint specularModeLoc;
+	GLuint textureModeLoc;
+	GLuint contourModeLoc;
 	GLuint outlineModeLoc;		   // Outline mode location
 	GLuint camPosLoc;		       // Camera position location
 	GLuint floorColorLoc, 	modelColorLoc;		    // Object color
