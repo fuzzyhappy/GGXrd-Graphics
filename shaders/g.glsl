@@ -51,15 +51,14 @@ void main() {
 
     isOutline = 1.0;
     vec4 viewNorm;
-    int ord[] = {0, 2, 1};
-    for (int i = 0; i < 3; i++) {
-        viewNorm = viewProjMat * vec4(geoVNorm[ord[i]], 0.0) * outline;
-        gl_Position = gl_in[ord[i]].gl_Position + viewNorm;
-        fragPos = geoPos[ord[i]] + geoVNorm[ord[i]] * outline;
-        fragNorm = normalsMode == NORMALSMODE_FACE ? geoFNorm[ord[i]] : geoVNorm[ord[i]];
-        fragColor = geoColor[ord[i]];
-        fragUV = geoUV[ord[i]];
-        lightFragPos = lightGeoPos[ord[i]];
+    for (int i = 2; i >= 0; i--) {
+        viewNorm = viewProjMat * vec4(geoVNorm[i], 0.0) * outline;
+        gl_Position = gl_in[i].gl_Position + viewNorm;
+        fragPos = geoPos[i] + geoVNorm[i] * outline;
+        fragNorm = normalsMode == NORMALSMODE_FACE ? geoFNorm[i] : geoVNorm[i];
+        fragColor = geoColor[i];
+        fragUV = geoUV[i];
+        lightFragPos = lightGeoPos[i];
         EmitVertex();
     }
 
