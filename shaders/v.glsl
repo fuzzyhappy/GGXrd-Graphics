@@ -21,9 +21,6 @@ smooth out vec3 geoFNorm;	    // Interpolated normal in world-space
 smooth out vec3 geoVNorm;	    // Interpolated normal in world-space
 smooth out vec3 geoColor;	    // Interpolated color (for Gouraud shading)
 smooth out vec2 geoUV;         // Interpolated texture coordinates
-smooth out vec3 tanLightPosG;    // Light position in tangent space
-smooth out vec3 tanViewerG;      // Viewing vector in tangent space
-smooth out vec3 tanGeoPos;     // Geoment position in tangent space
 smooth out vec4 lightGeoPos;   // Geoment position in light space
 
 // Light information
@@ -68,20 +65,6 @@ void main() {
 
 	// Get light-space position, pass to geoment shader
 	lightGeoPos = lightSpaceMat * vec4(geoPos, 1.0);
-
-	// TODO 2-1 TBN system construction
-
-	// TODO 2-2 Convert lighting related parameters based on TBN system
-	//          Hint: "lights[0].pos", "camPos", and "geoPos" to tangent space: light position ("tanLightPosG"), camera position ("tanViewerG") and geoment position ("tanGeoPos") to tangent space
-	vec3 n = normalize(fnorm);
-	vec3 t = normalize(tangent);
-	vec3 b = normalize(bitangent);
-	mat3 TBN = mat3(t, b, n);
-	TBN = transpose(TBN);
-
-	tanLightPosG = TBN * lights[0].pos;
-	tanViewerG = TBN * camPos;
-	tanGeoPos = TBN * geoPos;
 
 	// Pass the interpolated texture coordinates to the geometry shader
 	geoUV = uv;

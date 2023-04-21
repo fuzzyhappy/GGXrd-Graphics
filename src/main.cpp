@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
 	}
 
 	std::cout << "Mouse controls:" << std::endl;
-	//std::cout << "  Left click + drag to rotate camera" << std::endl;
+	std::cout << "  Left click + drag to rotate camera" << std::endl;
 	std::cout << "  Scroll wheel to zoom in/out" << std::endl;
 	std::cout << "  SHIFT + left click + drag to rotate active light source" << std::endl;
 	std::cout << "  SHIFT + scroll wheel to change active light distance" << std::endl;
@@ -403,7 +403,7 @@ void mouseBtn(int button, int state, int x, int y) {
 			glState->getLight(activeLight).beginRotate(
 				glm::vec2(x / scale, y / scale));
 
-		}/* else if (modifiers & GLUT_ACTIVE_CTRL) {
+		} else if (modifiers & GLUT_ACTIVE_CTRL) {
 
 			float scale = glm::min((float)width, (float)height);
 			glState->beginCameraTranslate(
@@ -411,12 +411,12 @@ void mouseBtn(int button, int state, int x, int y) {
 
 		// Start rotating the camera otherwise
 		} else
-			glState->beginCameraRotate(glm::vec2(x, y));*/
+			glState->beginCameraRotate(glm::vec2(x, y));
 	}
 	// Release left mouse button
 	if (state == GLUT_UP && button == GLUT_LEFT_BUTTON) {
 		// Stop camera and light rotation
-		//glState->endCameraRotate();
+		glState->endCameraRotate();
 		glState->endCameraTranslate();
 		glState->getLight(activeLight).endRotate();
 	}

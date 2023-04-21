@@ -16,9 +16,6 @@ smooth in vec3 geoFNorm[];	    // Interpolated normal in world-space
 smooth in vec3 geoVNorm[];	    // Interpolated normal in world-space
 smooth in vec3 geoColor[];	    // Interpolated color (for Gouraud shading)
 smooth in vec2 geoUV[];         // Interpolated texture coordinates
-smooth in vec3 tanLightPosG[];    // Light position in tangent space
-smooth in vec3 tanViewerG[];      // Viewing vector in tangent space
-smooth in vec3 tanGeoPos[];     // Geoment position in tangent space
 smooth in vec4 lightGeoPos[];   // Geoment position in light space
 
 smooth out vec3 fragPos;		    // Interpolated position in world-space
@@ -32,6 +29,7 @@ smooth out vec4 lightFragPos;    // Fragment position in light space
 out float isOutline;
 
 uniform float outline;
+uniform mat4 viewProjMat;
 
 void main() {
     
@@ -42,9 +40,6 @@ void main() {
         fragNorm = normalsMode == NORMALSMODE_FACE ? geoFNorm[i] : geoVNorm[i];
         fragColor = geoColor[i];
         fragUV = geoUV[i];
-        tanLightPos = tanLightPosG[i];
-        tanViewer = tanViewerG[i];
-        tanFragPos = tanGeoPos[i];
         lightFragPos = lightGeoPos[i];
         EmitVertex();
     }
@@ -55,15 +50,14 @@ void main() {
     }
 
     isOutline = 1.0;
-    for (int i = 0; i < 3; i++) {
-        gl_Position = gl_in[i].gl_Position + vec4(geoVNorm[i] * outline, 0);
+    vec4 viewNorm;
+    for (int i = 2; i >= 0; i--) {
+        viewNorm = viewProjMat * vec4(geoVNorm[i], 0.0) * outline;
+        gl_Position = gl_in[i].gl_Position + viewNorm;
         fragPos = geoPos[i] + geoVNorm[i] * outline;
         fragNorm = normalsMode == NORMALSMODE_FACE ? geoFNorm[i] : geoVNorm[i];
         fragColor = geoColor[i];
         fragUV = geoUV[i];
-        tanLightPos = tanLightPosG[i];
-        tanViewer = tanViewerG[i];
-        tanFragPos = tanGeoPos[i];
         lightFragPos = lightGeoPos[i];
         EmitVertex();
     }
