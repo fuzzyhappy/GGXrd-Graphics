@@ -38,7 +38,7 @@ void main() {
 
     gl_Position = gl_in[0].gl_Position;
     fragPos = geoPos[0];
-    fragNorm = normalsMode == NORMALSMODE_FACE ? geoFNorm[0] : geoVNorm[0];    
+    fragNorm = geoVNorm[0];
     fragColor = geoColor[0];
     fragUV = geoUV[0];
     tanLightPos = tanLightPosG[0];
@@ -49,7 +49,7 @@ void main() {
 
     gl_Position = gl_in[1].gl_Position;
     fragPos = geoPos[1];
-    fragNorm = normalsMode == NORMALSMODE_FACE ? geoFNorm[1] : geoVNorm[1];    
+    fragNorm = geoVNorm[1];
     fragColor = geoColor[1];
     fragUV = geoUV[1];
     tanLightPos = tanLightPosG[1];
@@ -60,7 +60,7 @@ void main() {
 
     gl_Position = gl_in[2].gl_Position;
     fragPos = geoPos[2];
-    fragNorm = normalsMode == NORMALSMODE_FACE ? geoFNorm[2] : geoVNorm[2];    
+    fragNorm = geoVNorm[2];
     fragColor = geoColor[2];
     fragUV = geoUV[2];
     tanLightPos = tanLightPosG[2];
@@ -71,7 +71,7 @@ void main() {
 
     EndPrimitive();
     
-    if (objType == OBJTYPE_FLOOR) {
+    if (geoObjType == OBJTYPE_FLOOR) {
         return;
     }
 
@@ -79,7 +79,7 @@ void main() {
 
     gl_Position = gl_in[0].gl_Position + vec4(geoVNorm[0] * outline, 0);
     fragPos = geoPos[0];
-    fragNorm = normalsMode == NORMALSMODE_FACE ? geoFNorm[0] : geoVNorm[0];    
+    fragNorm = geoVNorm[0];
     fragColor = geoColor[0];
     fragUV = geoUV[0];
     tanLightPos = tanLightPosG[0];
@@ -91,7 +91,7 @@ void main() {
 
     gl_Position = gl_in[1].gl_Position + vec4(geoVNorm[1] * outline, 0);
     fragPos = geoPos[1];
-    fragNorm = normalsMode == NORMALSMODE_FACE ? geoFNorm[1] : geoVNorm[1];    
+    fragNorm = geoVNorm[1];
     fragColor = geoColor[1];
     fragUV = geoUV[1];
     tanLightPos = tanLightPosG[1];
@@ -102,7 +102,7 @@ void main() {
 
     gl_Position = gl_in[2].gl_Position + vec4(geoVNorm[2] * outline, 0);
     fragPos = geoPos[2];
-    fragNorm = normalsMode == NORMALSMODE_FACE ? geoFNorm[2] : geoVNorm[2];
+    fragNorm = geoVNorm[2];
     fragColor = geoColor[2];
     fragUV = geoUV[2];
     tanLightPos = tanLightPosG[2];
