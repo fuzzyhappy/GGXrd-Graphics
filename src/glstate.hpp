@@ -123,6 +123,7 @@ public:
 	void translateCamera(glm::vec2 mousePos);
 	void offsetCamera(float offset);
 	inline float getMoveStep() { return moveStep; }
+	inline float getRotStep() { return rotStep; }
 	void update_time(float time);
 
 	// Set object to display
@@ -165,6 +166,7 @@ protected:
 	unsigned int numObjects;  // Number of objects in the scene
 	unsigned int activeObj = 1;   // The current active model (1-3)
 	float moveStep = 0.1f;  // Translation step
+	float rotStep = 3.14159265 / 24;
 
 	// Textures
 	Texture textures;

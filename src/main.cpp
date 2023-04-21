@@ -59,7 +59,7 @@ int main(int argc, char** argv) {
 	}
 
 	std::cout << "Mouse controls:" << std::endl;
-	std::cout << "  Left click + drag to rotate camera" << std::endl;
+	//std::cout << "  Left click + drag to rotate camera" << std::endl;
 	std::cout << "  Scroll wheel to zoom in/out" << std::endl;
 	std::cout << "  SHIFT + left click + drag to rotate active light source" << std::endl;
 	std::cout << "  SHIFT + scroll wheel to change active light distance" << std::endl;
@@ -75,6 +75,7 @@ int main(int argc, char** argv) {
 	std::cout << "  h,H:  Move the object along y axis" << std::endl;
 	std::cout << "  j,J:  Move the object along x axis" << std::endl;
 	std::cout << "  k,K:  Move the object along z axis" << std::endl;
+	std::cout << "  r,R:  Rotate the object" << std::endl;
 	std::cout << "  l,L:  Cycle through shading type (Colored normals vs. Cel vs. Phong)" << std::endl;
 	std::cout << std::endl;
 
@@ -339,6 +340,42 @@ void keyPress(unsigned char key, int x, int y) {
 		glutPostRedisplay();
 		break;
 	}
+	case 'r': {
+		auto curObj = glState->getObjects()[glState->getActiveObj()];  // Currently controlled object
+		auto curModelMat = curObj->getModelMat();  // Its model matrix
+		glm::vec4 translation = curModelMat[3];
+		float c = cos(glState->getRotStep());
+		float s = sin(glState->getRotStep());
+		glm::mat4 rotMat(c, 0, s, 0,
+						 0, 1, 0, 0,
+						-s, 0, c, 0,
+						 0, 0, 0, 1);
+		glm::mat4 newModelMat = curModelMat;
+		newModelMat[3] = glm::vec4(0, 0, 0, 1);
+		newModelMat = rotMat * newModelMat;
+		newModelMat[3] = translation;
+		curObj->setModelMat(newModelMat);
+		glutPostRedisplay();
+		break;
+	}
+	case 'R': {
+		auto curObj = glState->getObjects()[glState->getActiveObj()];  // Currently controlled object
+		auto curModelMat = curObj->getModelMat();  // Its model matrix
+		glm::vec4 translation = curModelMat[3];
+		float c = cos(-glState->getRotStep());
+		float s = sin(-glState->getRotStep());
+		glm::mat4 rotMat(c, 0, s, 0,
+						 0, 1, 0, 0,
+						-s, 0, c, 0,
+						 0, 0, 0, 1);
+		glm::mat4 newModelMat = curModelMat;
+		newModelMat[3] = glm::vec4(0, 0, 0, 1);
+		newModelMat = rotMat * newModelMat;
+		newModelMat[3] = translation;
+		curObj->setModelMat(newModelMat);
+		glutPostRedisplay();
+		break;
+	}
 	default:
 		break;
 	}
@@ -365,19 +402,20 @@ void mouseBtn(int button, int state, int x, int y) {
 			glState->getLight(activeLight).beginRotate(
 				glm::vec2(x / scale, y / scale));
 
-		} else if (modifiers & GLUT_ACTIVE_CTRL) {
+		}/* else if (modifiers & GLUT_ACTIVE_CTRL) {
+
 			float scale = glm::min((float)width, (float)height);
 			glState->beginCameraTranslate(
 				glm::vec2(x / scale, y / scale));
 
 		// Start rotating the camera otherwise
 		} else
-			glState->beginCameraRotate(glm::vec2(x, y));
+			glState->beginCameraRotate(glm::vec2(x, y));*/
 	}
 	// Release left mouse button
 	if (state == GLUT_UP && button == GLUT_LEFT_BUTTON) {
 		// Stop camera and light rotation
-		glState->endCameraRotate();
+		//glState->endCameraRotate();
 		glState->endCameraTranslate();
 		glState->getLight(activeLight).endRotate();
 	}
