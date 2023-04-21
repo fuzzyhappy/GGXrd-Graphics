@@ -213,7 +213,7 @@ void keyPress(unsigned char key, int x, int y) {
 			std::cout << "Turned on texture map" << std::endl;
 		}
 		else {
-			glState->setTextureMode(GLState::TEXTUREMODE_TEX);
+			glState->setTextureMode(GLState::TEXTUREMODE_CONST);
 			std::cout << "Turned off texture map" << std::endl;
 		}
 		glutPostRedisplay();

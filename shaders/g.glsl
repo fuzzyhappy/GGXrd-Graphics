@@ -34,82 +34,39 @@ out float isOutline;
 uniform float outline;
 
 void main() {
+    
     isOutline = 0.0;
-
-    gl_Position = gl_in[0].gl_Position;
-    fragPos = geoPos[0];
-    fragNorm = geoVNorm[0];
-    fragColor = geoColor[0];
-    fragUV = geoUV[0];
-    tanLightPos = tanLightPosG[0];
-    tanViewer = tanViewerG[0];
-    tanFragPos = tanGeoPos[0];
-    lightFragPos = lightGeoPos[0];
-    EmitVertex();
-
-    gl_Position = gl_in[1].gl_Position;
-    fragPos = geoPos[1];
-    fragNorm = geoVNorm[1];
-    fragColor = geoColor[1];
-    fragUV = geoUV[1];
-    tanLightPos = tanLightPosG[1];
-    tanViewer = tanViewerG[1];
-    tanFragPos = tanGeoPos[1];
-    lightFragPos = lightGeoPos[1];
-    EmitVertex();
-
-    gl_Position = gl_in[2].gl_Position;
-    fragPos = geoPos[2];
-    fragNorm = geoVNorm[2];
-    fragColor = geoColor[2];
-    fragUV = geoUV[2];
-    tanLightPos = tanLightPosG[2];
-    tanViewer = tanViewerG[2];
-    tanFragPos = tanGeoPos[2];
-    lightFragPos = lightGeoPos[2];
-    EmitVertex();
-
+    for (int i = 0; i < 3; i++) {
+        gl_Position = gl_in[i].gl_Position;
+        fragPos = geoPos[i];
+        fragNorm = normalsMode == NORMALSMODE_FACE ? geoFNorm[i] : geoVNorm[i];
+        fragColor = geoColor[i];
+        fragUV = geoUV[i];
+        tanLightPos = tanLightPosG[i];
+        tanViewer = tanViewerG[i];
+        tanFragPos = tanGeoPos[i];
+        lightFragPos = lightGeoPos[i];
+        EmitVertex();
+    }
     EndPrimitive();
     
-    if (geoObjType == OBJTYPE_FLOOR) {
+    if (objType == OBJTYPE_FLOOR || outline == 0.0) {
         return;
     }
 
     isOutline = 1.0;
-
-    gl_Position = gl_in[0].gl_Position + vec4(geoVNorm[0] * outline, 0);
-    fragPos = geoPos[0];
-    fragNorm = geoVNorm[0];
-    fragColor = geoColor[0];
-    fragUV = geoUV[0];
-    tanLightPos = tanLightPosG[0];
-    tanViewer = tanViewerG[0];
-    tanFragPos = tanGeoPos[0];
-    lightFragPos = lightGeoPos[0];
-    EmitVertex();
-      
-
-    gl_Position = gl_in[1].gl_Position + vec4(geoVNorm[1] * outline, 0);
-    fragPos = geoPos[1];
-    fragNorm = geoVNorm[1];
-    fragColor = geoColor[1];
-    fragUV = geoUV[1];
-    tanLightPos = tanLightPosG[1];
-    tanViewer = tanViewerG[1];
-    tanFragPos = tanGeoPos[1];
-    lightFragPos = lightGeoPos[1];
-    EmitVertex();
-
-    gl_Position = gl_in[2].gl_Position + vec4(geoVNorm[2] * outline, 0);
-    fragPos = geoPos[2];
-    fragNorm = geoVNorm[2];
-    fragColor = geoColor[2];
-    fragUV = geoUV[2];
-    tanLightPos = tanLightPosG[2];
-    tanViewer = tanViewerG[2];
-    tanFragPos = tanGeoPos[2];
-    lightFragPos = lightGeoPos[2];
-    EmitVertex();
+    for (int i = 0; i < 3; i++) {
+        gl_Position = gl_in[i].gl_Position + vec4(geoVNorm[i] * outline, 0);
+        fragPos = geoPos[i] + geoVNorm[i] * outline;
+        fragNorm = normalsMode == NORMALSMODE_FACE ? geoFNorm[i] : geoVNorm[i];
+        fragColor = geoColor[i];
+        fragUV = geoUV[i];
+        tanLightPos = tanLightPosG[i];
+        tanViewer = tanViewerG[i];
+        tanFragPos = tanGeoPos[i];
+        lightFragPos = lightGeoPos[i];
+        EmitVertex();
+    }
 
     EndPrimitive();
 }  
