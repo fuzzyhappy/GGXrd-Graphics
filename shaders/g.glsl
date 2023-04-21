@@ -16,9 +16,6 @@ smooth in vec3 geoFNorm[];	    // Interpolated normal in world-space
 smooth in vec3 geoVNorm[];	    // Interpolated normal in world-space
 smooth in vec3 geoColor[];	    // Interpolated color (for Gouraud shading)
 smooth in vec2 geoUV[];         // Interpolated texture coordinates
-smooth in vec3 tanLightPosG[];    // Light position in tangent space
-smooth in vec3 tanViewerG[];      // Viewing vector in tangent space
-smooth in vec3 tanGeoPos[];     // Geoment position in tangent space
 smooth in vec4 lightGeoPos[];   // Geoment position in light space
 
 smooth out vec3 fragPos;		    // Interpolated position in world-space
@@ -43,9 +40,6 @@ void main() {
         fragNorm = normalsMode == NORMALSMODE_FACE ? geoFNorm[i] : geoVNorm[i];
         fragColor = geoColor[i];
         fragUV = geoUV[i];
-        tanLightPos = tanLightPosG[i];
-        tanViewer = tanViewerG[i];
-        tanFragPos = tanGeoPos[i];
         lightFragPos = lightGeoPos[i];
         EmitVertex();
     }
@@ -65,9 +59,6 @@ void main() {
         fragNorm = normalsMode == NORMALSMODE_FACE ? geoFNorm[ord[i]] : geoVNorm[ord[i]];
         fragColor = geoColor[ord[i]];
         fragUV = geoUV[ord[i]];
-        tanLightPos = tanLightPosG[ord[i]];
-        tanViewer = tanViewerG[ord[i]];
-        tanFragPos = tanGeoPos[ord[i]];
         lightFragPos = lightGeoPos[ord[i]];
         EmitVertex();
     }
