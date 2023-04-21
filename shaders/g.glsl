@@ -32,6 +32,7 @@ smooth out vec4 lightFragPos;    // Fragment position in light space
 out float isOutline;
 
 uniform float outline;
+uniform mat4 viewProjMat;
 
 void main() {
     
@@ -55,16 +56,19 @@ void main() {
     }
 
     isOutline = 1.0;
+    vec4 viewNorm;
+    int ord[] = {0, 2, 1};
     for (int i = 0; i < 3; i++) {
-        gl_Position = gl_in[i].gl_Position + vec4(geoVNorm[i] * outline, 0);
-        fragPos = geoPos[i] + geoVNorm[i] * outline;
-        fragNorm = normalsMode == NORMALSMODE_FACE ? geoFNorm[i] : geoVNorm[i];
-        fragColor = geoColor[i];
-        fragUV = geoUV[i];
-        tanLightPos = tanLightPosG[i];
-        tanViewer = tanViewerG[i];
-        tanFragPos = tanGeoPos[i];
-        lightFragPos = lightGeoPos[i];
+        viewNorm = viewProjMat * vec4(geoVNorm[ord[i]], 0.0) * outline;
+        gl_Position = gl_in[ord[i]].gl_Position + viewNorm;
+        fragPos = geoPos[ord[i]] + geoVNorm[ord[i]] * outline;
+        fragNorm = normalsMode == NORMALSMODE_FACE ? geoFNorm[ord[i]] : geoVNorm[ord[i]];
+        fragColor = geoColor[ord[i]];
+        fragUV = geoUV[ord[i]];
+        tanLightPos = tanLightPosG[ord[i]];
+        tanViewer = tanViewerG[ord[i]];
+        tanFragPos = tanGeoPos[ord[i]];
+        lightFragPos = lightGeoPos[ord[i]];
         EmitVertex();
     }
 
