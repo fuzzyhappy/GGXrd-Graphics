@@ -2,15 +2,13 @@
 
 const int SHADINGMODE_NORMALS = 0;		// Show normals as colors
 const int SHADINGMODE_CEL = 1;			// Cel shading + illumination
-
-const int NORMAL_MAPPING_ON = 0;        // Turn on normal mapping
-const int NORMAL_MAPPING_OFF = 1;       // Turn off
-
-const int SHADOW_MAPPING_ON = 0;        // Turn on shadow mapping
-const int SHADOW_MAPPING_OFF = 1;       // Turn off
+const int SHADINGMODE_PHONG = 2;
 
 const int LIGHTTYPE_POINT = 0;			// Point light
 const int LIGHTTYPE_DIRECTIONAL = 1;	// Directional light
+
+const int SSS_SHADING = 0;
+const int CONST_SHADING = 1;
 
 const int OBJTYPE_FLOOR = 0;
 const int OBJTYPE_MODEL = 1;
@@ -46,8 +44,6 @@ layout (std140) uniform LightBlock {
 };
 
 uniform int shadingMode;		// Which shading mode
-uniform int normalMapMode;      // Whether turn on normal mapping
-uniform int shadowMapMode;      // Whether turn on shadow mapping
 uniform int objType;            // 0 for floor and 1 for model
 uniform vec3 camPos;			// World-space camera position
 
@@ -103,7 +99,7 @@ void main() {
 		outCol = normalize(fragNorm) * 0.5 + vec3(0.5);
 		return;
 	}
-	else if (isOutline != 0.0) {
+	if (isOutline != 0.0) {
 		outCol = vec3(0.0);
 		return;
 	}
@@ -134,8 +130,9 @@ void main() {
 				lightDir = normalize(lights[i].pos);
 			}
 
+			vec3 viewDir = normalize(camPos - fragPos);
+
 			if (shadingMode == SHADINGMODE_CEL) {
-				vec3 viewDir = normalize(camPos - fragPos);
 				vec4 ilm = texture(texModelIlm, fragUV);
 
 				float diffuse = dot(normal, lightDir);
@@ -154,13 +151,12 @@ void main() {
 			} 
 
 			else {
-				vec3 viewDir = normalize(camPos - fragPos);
-
 				float ambient = ambStr;
 				float diffuse = max(dot(normal, lightDir), 0.0) * diffStr;
 				vec3 reflectDir = -lightDir - 2 * dot(-lightDir, normal) * normal;
 				float specular = max(dot(viewDir, reflectDir), 0.0);
 				specular = pow(dot(viewDir, reflectDir), specExp) * specStr;
+				outCol += (ambient + diffuse + specular) * lights[i].color;
 			}
 		}
 	}

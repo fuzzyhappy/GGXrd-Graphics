@@ -64,13 +64,12 @@ int main(int argc, char** argv) {
 	std::cout << "  SHIFT + left click + drag to rotate active light source" << std::endl;
 	std::cout << "  SHIFT + scroll wheel to change active light distance" << std::endl;
 	std::cout << "Keyboard controls:" << std::endl;
-	std::cout << "  1-3:  Change active object to move" << std::endl;
+	std::cout << "  0:  Turn off all cel shading features" << std::endl;
+	std::cout << "  1-9:  Toggle cel shading features" << std::endl;
 	std::cout << "  h,H:  Move the object along y axis" << std::endl;
 	std::cout << "  j,J:  Move the object along x axis" << std::endl;
 	std::cout << "  k,K:  Move the object along z axis" << std::endl;
-	std::cout << "  l,L:  Toggle shading type (Cel vs. colored normals)" << std::endl;
-	std::cout << "  m,M:  Toggle normal mapping mode (on or off)" << std::endl;
-	std::cout << "  s,S:  Toggle shadow mapping mode (on or off)" << std::endl;
+	std::cout << "  l,L:  Cycle through shading type (Colored normals vs. Cel vs. Phong)" << std::endl;
 	std::cout << "  o,O:  Toggle outlining mode (on or off)" << std::endl;
 	std::cout << std::endl;
 
@@ -138,85 +137,19 @@ void reshape(GLint w, GLint h) {
 void keyPress(unsigned char key, int x, int y) {
 	switch (key) {
 	// Toggle shading mode (normals vs Cel)
-	case 'l': {
-		GLState::ShadingMode sm = glState->getShadingMode();
-		if (sm == GLState::SHADINGMODE_NORMALS) {
-			glState->setShadingMode(GLState::SHADINGMODE_CEL);
-			std::cout << "Showing Cel shading & illumination" << std::endl;
-		} else if (sm == GLState::SHADINGMODE_CEL) {
-			glState->setShadingMode(GLState::SHADINGMODE_NORMALS);
-			std::cout << "Showing normals as colors" << std::endl;
-		}
-		glutPostRedisplay();
-		break; }
-	// Toggle shading mode (normals vs Cel)
+	case 'l': 
 	case 'L': {
+		static const char* message[] = {"Shading mode set to Normals", "Shading mode set to Cel", "Shading mode set to Phong"};
 		GLState::ShadingMode sm = glState->getShadingMode();
-		if (sm == GLState::SHADINGMODE_NORMALS) {
-			glState->setShadingMode(GLState::SHADINGMODE_CEL);
-			std::cout << "Showing Cel shading & illumination" << std::endl;
-		} else if (sm == GLState::SHADINGMODE_CEL) {
-			glState->setShadingMode(GLState::SHADINGMODE_NORMALS);
-			std::cout << "Showing normals as colors" << std::endl;
-		}
+		int smint = static_cast<int>(sm);
+		smint = (smint + 1) % 3;
+		GLState::ShadingMode newsm = static_cast<GLState::ShadingMode>( smint );
+		glState->setShadingMode(newsm);
+		std::cout << message[smint] << std::endl;
 		glutPostRedisplay();
-		break; }
-	// Toggle normal mapping mode (on or off)
-	case 'm': {
-		GLState::NormalMapMode nmm = glState->getNormalMapMode();
-		if (nmm == GLState::NORMAL_MAPPING_ON) {
-			glState->setNormalMapMode(GLState::NORMAL_MAPPING_OFF);
-			std::cout << "Turned off normal mapping" << std::endl;
-		}
-		else if (nmm == GLState::NORMAL_MAPPING_OFF) {
-			glState->setNormalMapMode(GLState::NORMAL_MAPPING_ON);
-			std::cout << "Turned on normal mapping" << std::endl;
-		}
-		glutPostRedisplay();
-		break;
+		break; 
 	}
-	// Toggle normal mapping mode (on or off)
-	case 'M': {
-		GLState::NormalMapMode nmm = glState->getNormalMapMode();
-		if (nmm == GLState::NORMAL_MAPPING_ON) {
-			glState->setNormalMapMode(GLState::NORMAL_MAPPING_OFF);
-			std::cout << "Turned off normal mapping" << std::endl;
-		}
-		else if (nmm == GLState::NORMAL_MAPPING_OFF) {
-			glState->setNormalMapMode(GLState::NORMAL_MAPPING_ON);
-			std::cout << "Turned on normal mapping" << std::endl;
-		}
-		glutPostRedisplay();
-		break;
-	}
-	// Toggle shadow mapping mode (on or off)
-	case 's': {
-		GLState::ShadowMapMode smm = glState->getShadowMapMode();
-		if (smm == GLState::SHADOW_MAPPING_ON) {
-			glState->setShadowMapMode(GLState::SHADOW_MAPPING_OFF);
-			std::cout << "Turned off shadow mapping" << std::endl;
-		}
-		else if (smm == GLState::SHADOW_MAPPING_OFF) {
-			glState->setShadowMapMode(GLState::SHADOW_MAPPING_ON);
-			std::cout << "Turned on shadow mapping" << std::endl;
-		}
-		glutPostRedisplay();
-		break;
-	}
-	// Toggle shadow mapping mode (on or off)
-	case 'S': {
-		GLState::ShadowMapMode smm = glState->getShadowMapMode();
-		if (smm == GLState::SHADOW_MAPPING_ON) {
-			glState->setShadowMapMode(GLState::SHADOW_MAPPING_OFF);
-			std::cout << "Turned off shadow mapping" << std::endl;
-		}
-		else if (smm == GLState::SHADOW_MAPPING_OFF) {
-			glState->setShadowMapMode(GLState::SHADOW_MAPPING_ON);
-			std::cout << "Turned on shadow mapping" << std::endl;
-		}
-		glutPostRedisplay();
-		break;
-	}
+
 	// Toggle outline
 	case 'O':
 	case 'o': {

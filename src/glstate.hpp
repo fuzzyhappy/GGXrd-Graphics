@@ -30,6 +30,7 @@ public:
 	enum ShadingMode {
 		SHADINGMODE_NORMALS = 0,	// View normals as colors
 		SHADINGMODE_CEL = 1,		// Use Cel shading and illumination
+		SHADINGMODE_PHONG = 2
 	};
 	enum NormalMapMode {
 		NORMAL_MAPPING_ON = 0,      // Toggle normal mapping
@@ -49,12 +50,8 @@ public:
 
 	// Drawing modes
 	ShadingMode getShadingMode() const { return shadingMode; }
-	NormalMapMode getNormalMapMode() const { return normalMapMode; }
-	ShadowMapMode getShadowMapMode() const { return shadowMapMode; }
 	OutlineMode getOutlineMode() const { return outlineMode; }
 	void setShadingMode(ShadingMode sm);
-	void setNormalMapMode(NormalMapMode nmm);
-	void setShadowMapMode(ShadowMapMode smm);
 	void setOutlineMode(OutlineMode om);
 
 	// Object properties
@@ -150,8 +147,6 @@ protected:
 	GLuint objTypeLoc;             // Object type location (decide which material attributes to use and which texture to map)
 	GLuint viewProjMatLoc;	       // World-to-clip matrix location
 	GLuint shadingModeLoc;	       // Shading mode location
-	GLuint normalMapModeLoc;       // Normal mapping mode location
-	GLuint shadowMapModeLoc;       // Shadow mapping mode location
 	GLuint outlineModeLoc;		   // Outline mode location
 	GLuint camPosLoc;		       // Camera position location
 	GLuint floorColorLoc, 	modelColorLoc;		    // Object color
@@ -159,6 +154,7 @@ protected:
 	GLuint floorDiffStrLoc, modelDiffStrLoc;		// Diffuse strength location
 	GLuint floorSpecStrLoc, modelSpecStrLoc;		// Specular strength location
 	GLuint floorSpecExpLoc, modelSpecExpLoc;		// Specular exponent location
+	GLuint featureToggleLoc[10];
 	float cur_time;
 };
 

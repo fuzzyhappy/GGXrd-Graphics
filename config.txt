@@ -23,19 +23,19 @@ models/ANS_Mod.obj 1
 #   specular exponent    [1, 1024]
 #   object color R G B   [0, 255]
 
+# Parameters of cube model
+0.05
+0.2
+1.0
+64.0
+153 153 255
+
 # Parameters of floor model
 0.05
 1.0
 1.0
 64.0
 255 153 153
-
-# Parameters of cube model
-0.05
-1.0
-1.0
-64.0
-153 153 255
 
 # Number of lights (max 8)
 1

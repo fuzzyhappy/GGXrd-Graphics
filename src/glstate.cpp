@@ -30,8 +30,6 @@ GLState::GLState() :
 	objTypeLoc(0),
 	viewProjMatLoc(0),
 	shadingModeLoc(0),
-	normalMapModeLoc(0),
-	shadowMapModeLoc(0),
 	outlineModeLoc(0),
 	camPosLoc(0),
 	floorColorLoc(0),
@@ -43,7 +41,8 @@ GLState::GLState() :
 	modelAmbStrLoc(0),
 	modelDiffStrLoc(0),
 	modelSpecStrLoc(0),
-	modelSpecExpLoc(0)
+	modelSpecExpLoc(0),
+	featureToggleLoc()
 	{}
 
 // Destructor
@@ -66,8 +65,6 @@ void GLState::initializeGL() {
 
 	// Set drawing state
 	setShadingMode(SHADINGMODE_CEL);
-	setNormalMapMode(NORMAL_MAPPING_ON);
-	setShadowMapMode(SHADOW_MAPPING_ON);
 	setOutlineMode(OUTLINE_ON);
 
 	// Create lights
@@ -161,7 +158,7 @@ void GLState::paintGL() {
 	viewProjMat = proj * view;
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	glUniform1f(glGetUniformLocation(shader, "outline"), 5.0f);
+	glUniform1f(glGetUniformLocation(shader, "outline"), .015f);
 	for (auto& objPtr : objects) {
 		glm::mat4 modelMat = objPtr->getModelMat();
 		// Upload transform matrices to shader
@@ -202,24 +199,6 @@ void GLState::setShadingMode(ShadingMode sm) {
 	// Update mode in shader
 	glUseProgram(shader);
 	glUniform1i(shadingModeLoc, (int)shadingMode);
-	glUseProgram(0);
-}
-
-void GLState::setNormalMapMode(NormalMapMode nmm) {
-	normalMapMode = nmm;
-
-	// Update mode in shader
-	glUseProgram(shader);
-	glUniform1i(normalMapModeLoc, (int)normalMapMode);
-	glUseProgram(0);
-}
-
-void GLState::setShadowMapMode(ShadowMapMode smm) {
-	shadowMapMode = smm;
-
-	// Update mode in shader
-	glUseProgram(shader);
-	glUniform1i(shadowMapModeLoc, (int)shadowMapMode);
 	glUseProgram(0);
 }
 
@@ -419,8 +398,6 @@ void GLState::initShaders() {
 	objTypeLoc		 = glGetUniformLocation(shader, "objType");
 	viewProjMatLoc	 = glGetUniformLocation(shader, "viewProjMat");
 	shadingModeLoc	 = glGetUniformLocation(shader, "shadingMode");
-	normalMapModeLoc = glGetUniformLocation(shader, "normalMapMode");
-	shadowMapModeLoc = glGetUniformLocation(shader, "shadowMapMode");
 	outlineModeLoc   = glGetUniformLocation(shader, "outlineMode");
 	camPosLoc		 = glGetUniformLocation(shader, "camPos");
 	floorColorLoc	 = glGetUniformLocation(shader, "floorColor");
