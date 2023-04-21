@@ -1,14 +1,5 @@
 #version 330
 
-const int NORMALMODE_FACE = 0;			// Flat normals
-const int NORMALMODE_SMOOTH = 1;		// Smooth normals
-
-const int LIGHTTYPE_POINT = 0;
-const int LIGHTTYPE_DIRECTIONAL = 1;
-
-const int OBJTYPE_FLOOR = 0;
-const int OBJTYPE_CUBE = 1;
-
 layout(location = 0) in vec3 pos;			// Model-space position
 layout(location = 1) in vec3 fnorm;		    // Model-space face normal
 layout(location = 2) in vec3 vnorm;		    // Model-space face normal
@@ -51,8 +42,6 @@ uniform float cubeAmbStr;
 uniform float cubeDiffStr;
 uniform float cubeSpecStr;
 uniform float cubeSpecExp;
-
-uniform float outline;
 
 void main() {
 	// Get world-space position and normal
